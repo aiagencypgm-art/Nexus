@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NEXUS">
+<meta name="theme-color" content="#0A0A0F">
+<title>NEXUS</title>
+<link rel="manifest" href="data:application/json,{%22name%22:%22NEXUS%22,%22short_name%22:%22NEXUS%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230A0A0F%22,%22theme_color%22:%22%237C3AED%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%237C3AED'/%3E%3Ctext y='.9em' font-size='80' x='10'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22any%22,%22type%22:%22image/svg+xml%22}]}">
+<style>
+:root {
+  --bg: #0A0A0F;
+  --surface: #12121A;
+  --surface2: #1A1A26;
+  --border: #2A2A3A;
+  --purple: #7C3AED;
+  --purple-light: #A78BFA;
+  --purple-dim: #2D1B69;
+  --gold: #F59E0B;
+  --gold-dim: #451A03;
+  --green: #10B981;
+  --green-dim: #064E3B;
+  --red: #EF4444;
+  --red-dim: #450A0A;
+  --text: #F1F0FF;
+  --text2: #9CA3AF;
+  --text3: #4B5563;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; }
+
+/* SCROLLABLE AREAS */
+.scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.scroll::-webkit-scrollbar { width: 0; }
+
+/* LAYOUT */
+#app { height: 100vh; display: flex; flex-direction: column; }
+#screen { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 80px; }
+#screen::-webkit-scrollbar { width: 0; }
+#nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
+.nav-btn { flex: 1; padding: 10px 0 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; color: var(--text3); border: none; background: none; cursor: pointer; transition: color 0.2s; }
+.nav-btn.active { color: var(--purple-light); }
+.nav-btn svg { width: 22px; height: 22px; }
+
+/* CARDS */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin: 0 16px 12px; }
+.card-sm { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; }
+
+/* BUTTONS */
+.btn { width: 100%; padding: 14px; border-radius: var(--radius); border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
+.btn:active { transform: scale(0.98); opacity: 0.9; }
+.btn-primary { background: var(--purple); color: #fff; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid var(--red); }
+.btn-sm { padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); width: auto; }
+
+/* INPUTS */
+input, textarea { width: 100%; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 15px; font-family: inherit; outline: none; transition: border-color 0.2s; }
+input:focus, textarea:focus { border-color: var(--purple); }
+input::placeholder, textarea::placeholder { color: var(--text3); }
+textarea { resize: none; min-height: 80px; }
+label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+
+/* BADGES */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-purple { background: var(--purple-dim); color: var(--purple-light); }
+.badge-gold { background: var(--gold-dim); color: var(--gold); }
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-red { background: var(--red-dim); color: var(--red); }
+
+/* XP BAR */
+.xp-bar-wrap { background: var(--surface2); border-radius: 10px; height: 8px; overflow: hidden; }
+.xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--purple-light)); border-radius: 10px; transition: width 0.5s ease; }
+
+/* PAGE HEADER */
+.page-header { padding: 20px 16px 8px; display: flex; align-items: center; justify-content: space-between; }
+.page-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.page-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
+
+/* MISSION ITEM */
+.mission-item { display: flex; align-items: flex-start; gap: 12px; }
+.mission-check { width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--border); background: none; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; margin-top: 2px; }
+.mission-check.done { background: var(--purple); border-color: var(--purple); }
+.mission-check svg { width: 14px; height: 14px; display: none; }
+.mission-check.done svg { display: block; }
+.mission-title { font-size: 14px; font-weight: 500; }
+.mission-xp { font-size: 12px; color: var(--gold); margin-top: 2px; }
+.mission-title.done-text { text-decoration: line-through; color: var(--text3); }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+/* OVERLAY & MODAL */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.overlay.show { opacity: 1; pointer-events: all; }
+.modal { background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; padding: 20px 16px 36px; width: 100%; max-height: 85vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.3s ease; }
+.overlay.show .modal { transform: translateY(0); }
+.modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+
+/* LEVEL UP OVERLAY */
+#levelup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s; }
+#levelup-overlay.show { opacity: 1; pointer-events: all; }
+.levelup-ring { width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--purple); display: flex; align-items: center; justify-content: center; flex-direction: column; position: relative; animation: pulse-ring 1.5s ease-in-out infinite; }
+@keyframes pulse-ring { 0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,0.4)} 50%{box-shadow:0 0 0 20px rgba(124,58,237,0)} }
+.levelup-num { font-size: 56px; font-weight: 800; color: var(--purple-light); line-height: 1; }
+.levelup-label { font-size: 12px; color: var(--text2); }
+.levelup-title { font-size: 28px; font-weight: 800; margin-top: 20px; letter-spacing: -0.5px; }
+.levelup-sub { font-size: 14px; color: var(--text2); margin-top: 6px; }
+.particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.particle { position: absolute; width: 6px; height: 6px; border-radius: 50%; animation: float-up 2s ease-out forwards; }
+@keyframes float-up { 0%{transform:translateY(100vh) scale(1);opacity:1} 100%{transform:translateY(-20vh) scale(0);opacity:0} }
+
+/* ACHIEVEMENT TOAST */
+#ach-toast { position: fixed; top: 20px; left: 16px; right: 16px; background: var(--gold-dim); border: 1px solid var(--gold); border-radius: var(--radius); padding: 14px 16px; z-index: 400; display: flex; align-items: center; gap: 12px; transform: translateY(-120px); transition: transform 0.4s ease; }
+#ach-toast.show { transform: translateY(0); }
+.ach-icon { font-size: 28px; }
+.ach-text-title { font-size: 14px; font-weight: 700; color: var(--gold); }
+.ach-text-desc { font-size: 12px; color: var(--text2); }
+
+/* AUTH */
+#auth-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
+.auth-logo { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin-bottom: 6px; background: linear-gradient(135deg, var(--purple-light), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.auth-tagline { font-size: 14px; color: var(--text2); margin-bottom: 36px; text-align: center; }
+.auth-card { width: 100%; max-width: 360px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+.auth-tabs { display: flex; gap: 0; margin-bottom: 20px; background: var(--surface2); border-radius: var(--radius-sm); padding: 3px; }
+.auth-tab { flex: 1; padding: 8px; text-align: center; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.2s; color: var(--text2); }
+.auth-tab.active { background: var(--purple); color: #fff; }
+.form-group { margin-bottom: 14px; }
+.error-msg { color: var(--red); font-size: 12px; margin-top: 8px; display: none; }
+.error-msg.show { display: block; }
+
+/* SETUP FLOW */
+#setup-screen { min-height: 100vh; display: flex; flex-direction: column; padding: 24px 16px; }
+.setup-step { display: none; flex: 1; flex-direction: column; }
+.setup-step.active { display: flex; }
+.setup-header { margin-bottom: 24px; }
+.setup-emoji { font-size: 40px; margin-bottom: 10px; }
+.setup-title { font-size: 22px; font-weight: 800; }
+.setup-desc { font-size: 14px; color: var(--text2); margin-top: 6px; line-height: 1.5; }
+.goal-input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.goal-input-row input { flex: 1; }
+.goal-rm { background: none; border: none; color: var(--text3); font-size: 20px; cursor: pointer; padding: 4px; }
+
+/* FRIEND CODE */
+.friend-code-display { font-size: 28px; font-weight: 800; letter-spacing: 4px; text-align: center; color: var(--purple-light); background: var(--purple-dim); border-radius: var(--radius); padding: 16px; margin: 12px 0; font-family: monospace; }
+
+/* WHEEL */
+#wheel-canvas { display: block; margin: 0 auto; border-radius: 50%; }
+.wheel-result { text-align: center; padding: 20px; }
+.wheel-result-text { font-size: 22px; font-weight: 800; color: var(--gold); }
+
+/* PROGRESS RING */
+.prog-ring { transform: rotate(-90deg); }
+.prog-ring-bg { fill: none; stroke: var(--surface2); stroke-width: 4; }
+.prog-ring-fill { fill: none; stroke: var(--purple); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease; }
+
+/* TABS */
+.tabs { display: flex; gap: 0; padding: 0 16px; margin-bottom: 12px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+.tab { padding: 12px 16px; font-size: 13px; font-weight: 600; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.tab.active { color: var(--purple-light); border-bottom-color: var(--purple-light); }
+
+/* TROPHY GRID */
+.trophy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; }
+.trophy-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 12px; text-align: center; opacity: 0.4; transition: all 0.3s; }
+.trophy-card.unlocked { opacity: 1; border-color: var(--gold); }
+.trophy-icon { font-size: 28px; margin-bottom: 6px; }
+.trophy-name { font-size: 12px; font-weight: 700; }
+.trophy-desc { font-size: 10px; color: var(--text2); margin-top: 3px; }
+
+/* STAT ROW */
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+.stat-label { font-size: 13px; color: var(--text2); }
+.stat-val { font-size: 14px; font-weight: 700; }
+
+/* FRIEND PANEL */
+.friend-panel { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-top: 8px; }
+.friend-name { font-size: 14px; font-weight: 700; }
+.friend-level { font-size: 12px; color: var(--purple-light); }
+
+/* MONTHLY BANNER */
+.monthly-banner { background: linear-gradient(135deg, var(--purple-dim), var(--gold-dim)); border: 1px solid var(--gold); border-radius: var(--radius); padding: 16px; margin: 0 16px 12px; text-align: center; }
+.monthly-winner-name { font-size: 20px; font-weight: 800; color: var(--gold); }
+
+/* SECTION LABEL */
+.section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); padding: 0 16px; margin-bottom: 8px; margin-top: 4px; }
+
+/* SPINNER */
+.spinner { width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* NOTIFICATION DOT */
+.notif-dot { width: 8px; height: 8px; background: var(--red); border-radius: 50%; position: absolute; top: 6px; right: 50%; transform: translateX(8px); }
+
+/* PENDING CARD */
+.pending-card { background: var(--purple-dim); border: 1px solid var(--purple); border-radius: var(--radius-sm); padding: 12px; margin: 0 16px 12px; }
+
+/* SWITCH */
+.switch-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+.switch { position: relative; width: 44px; height: 26px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch-slider { position: absolute; inset: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 13px; cursor: pointer; transition: 0.3s; }
+.switch-slider:before { content: ''; position: absolute; width: 20px; height: 20px; left: 2px; bottom: 2px; background: var(--text3); border-radius: 50%; transition: 0.3s; }
+input:checked + .switch-slider { background: var(--purple); border-color: var(--purple); }
+input:checked + .switch-slider:before { transform: translateX(18px); background: #fff; }
+
+.hidden { display: none !important; }
+
+/* FADE IN */
+.fade-in { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-logo">⚡ NEXUS</div>
+  <div class="auth-tagline">Compite. Crece. Domina.</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchAuthTab('login')">Entrar</div>
+      <div class="auth-tab" onclick="switchAuthTab('register')">Registrarse</div>
+    </div>
+    <div id="login-form">
+      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="tu@email.com"></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+      <div class="error-msg" id="login-error"></div>
+      <button class="btn btn-primary" onclick="doLogin()" style="margin-top:6px">Entrar</button>
+    </div>
+    <div id="register-form" class="hidden">
+      <div class="form-group"><label>Nombre de usuario</label><input type="text" id="reg-username" placeholder="TuNombre" maxlength="20"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="reg-email" placeholder="tu@email.com"></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres"></div>
+      <div class="error-msg" id="reg-error"></div>
+      <button class="btn btn-primary" onclick="doRegister()" style="margin-top:6px">Crear cuenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP SCREEN -->
+<div id="setup-screen" class="hidden">
+  <!-- Step 1: Welcome -->
+  <div class="setup-step active" id="setup-1">
+    <div class="setup-header">
+      <div class="setup-emoji">⚡</div>
+      <div class="setup-title">Bienvenido a NEXUS</div>
+      <div class="setup-desc">Una app para dos jugadores. Compite con tu amigo, cumple misiones y sube de nivel juntos.</div>
+    </div>
+    <div class="card" style="margin:0 0 16px">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Tu código de amigo</div>
+      <div class="friend-code-display" id="setup-friend-code">——————</div>
+      <div style="font-size:12px;color:var(--text2);text-align:center;margin-top:8px">Compártelo para que tu amigo se vincule contigo</div>
+      <button class="btn btn-secondary" style="margin-top:12px" onclick="copyFriendCode()">📋 Copiar código</button>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="setupStep(2)">Continuar →</button>
+  </div>
+
+  <!-- Step 2: Add friend -->
+  <div class="setup-step" id="setup-2">
+    <div class="setup-header">
+      <div class="setup-emoji">🤝</div>
+      <div class="setup-title">Vincula a tu amigo</div>
+      <div class="setup-desc">Introduce el código de tu amigo para enviarle una solicitud de amistad.</div>
+    </div>
+    <div id="friendship-status-area">
+      <div class="form-group"><label>Código de amigo</label><input type="text" id="friend-code-input" placeholder="Ej: a1b2c3d4" maxlength="8"></div>
+      <div class="error-msg" id="friend-error"></div>
+      <button class="btn btn-primary" onclick="sendFriendRequest()">Enviar solicitud</button>
+      <div style="text-align:center;margin:16px 0;font-size:13px;color:var(--text2)">— o —</div>
+      <div id="pending-requests-area"></div>
+    </div>
+    <div id="friend-connected" class="hidden">
+      <div class="card" style="margin:0;text-align:center;">
+        <div style="font-size:36px;margin-bottom:8px">✅</div>
+        <div style="font-weight:700;font-size:16px" id="friend-connected-name">¡Conectado!</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:4px">Ya sois amigos en NEXUS</div>
+      </div>
+    </div>
+    <div style="flex:1"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-secondary" style="flex:1" onclick="setupStep(1)">← Atrás</button>
+      <button class="btn btn-primary" style="flex:2" id="step2-next" onclick="setupStep(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Create group -->
+  <div class="setup-step" id="setup-3">
+    <div class="setup-header">
+      <div class="setup-emoji">⚔️</div>
+      <div class="setup-title">Crea el grupo</div>
+      <div class="setup-desc">Dale un nombre a vuestro grupo de batalla.</div>
+    </div>
+    <div class="form-group"><label>Nombre del grupo</label><input type="text" id="group-name-input" placeholder="Ej: Los Imparables" maxlength="30"></div>
+    <div class="error-msg" id="group-error"></div>
+    <div style="flex:1"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-secondary" style="flex:1" onclick="setupStep(2)">← Atrás</button>
+      <button class="btn btn-primary" style="flex:2" onclick="createGroup()">Crear grupo →</button>
+    </div>
+  </div>
+
+  <!-- Step 4: Goals -->
+  <div class="setup-step" id="setup-4">
+    <div class="setup-header">
+      <div class="setup-emoji">🎯</div>
+      <div class="setup-title">Tus objetivos</div>
+      <div class="setup-desc">¿Qué quieres conseguir a largo plazo? Serán la base de tus misiones.</div>
+    </div>
+    <div id="goals-list"></div>
+    <button class="btn btn-secondary" onclick="addGoalInput()" style="margin-bottom:16px">+ Añadir objetivo</button>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="saveGoals()">Guardar y continuar →</button>
+  </div>
+
+  <!-- Step 5: Missions -->
+  <div class="setup-step" id="setup-5">
+    <div class="setup-header">
+      <div class="setup-emoji">📋</div>
+      <div class="setup-title">Tus misiones</div>
+      <div class="setup-desc">Basándonos en tus objetivos, te sugerimos estas misiones. Puedes editarlas.</div>
+    </div>
+    <div style="font-weight:700;font-size:13px;color:var(--purple-light);margin-bottom:8px">MISIONES DIARIAS</div>
+    <div id="daily-missions-setup"></div>
+    <div style="font-weight:700;font-size:13px;color:var(--gold);margin:12px 0 8px">MISIONES MENSUALES</div>
+    <div id="monthly-missions-setup"></div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="saveMissions()" style="margin-top:16px">Enviar misiones al amigo →</button>
+  </div>
+
+  <!-- Step 6: Waiting for friend -->
+  <div class="setup-step" id="setup-6">
+    <div class="setup-header" style="text-align:center;align-items:center;display:flex;flex-direction:column">
+      <div class="setup-emoji">⏳</div>
+      <div class="setup-title">Esperando a tu amigo</div>
+      <div class="setup-desc">Tu amigo debe revisar y aprobar tus misiones antes de empezar.</div>
+    </div>
+    <div class="card" style="margin:0">
+      <div style="text-align:center;padding:20px">
+        <div class="spinner" style="margin-bottom:16px"></div>
+        <div style="font-size:13px;color:var(--text2)">Cuando tu amigo apruebe las misiones, recibirás una notificación</div>
+      </div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-secondary" onclick="checkMissionStatus()">Comprobar estado</button>
+  </div>
+
+  <!-- Step 7: Approve friend missions -->
+  <div class="setup-step" id="setup-7">
+    <div class="setup-header">
+      <div class="setup-emoji">✅</div>
+      <div class="setup-title">Misiones de tu amigo</div>
+      <div class="setup-desc">Revisa las misiones de tu amigo y ajusta el XP si lo ves necesario.</div>
+    </div>
+    <div id="friend-missions-review"></div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="approveFriendMissions()" style="margin-top:16px">✅ Aprobar y empezar</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" class="hidden">
+  <div id="screen">
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="fade-in">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="dash-greeting">¡Buenos días!</div>
+          <div class="page-sub" id="dash-date"></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:12px;color:var(--text2)">NIVEL</div>
+          <div style="font-size:24px;font-weight:800;color:var(--purple-light)" id="dash-level">1</div>
+        </div>
+      </div>
+
+      <!-- XP Bar -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="font-size:12px;color:var(--text2)">XP TOTAL</div>
+          <div style="font-size:13px;font-weight:700;color:var(--purple-light)" id="dash-xp">0 XP</div>
+        </div>
+        <div class="xp-bar-wrap">
+          <div class="xp-bar-fill" id="dash-xp-bar" style="width:0%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:5px">
+          <div style="font-size:11px;color:var(--text3)" id="dash-xp-next"></div>
+          <div style="font-size:11px;color:var(--purple-light)" id="dash-streak">🔥 0 días</div>
+        </div>
+      </div>
+
+      <!-- Friend panel -->
+      <div class="card" id="dash-friend-panel" style="display:none">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Tu rival</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-weight:700" id="dash-friend-name">—</div>
+            <div style="font-size:12px;color:var(--purple-light)" id="dash-friend-level">Nivel 1</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:18px;font-weight:800;color:var(--gold)" id="dash-friend-xp">0 XP</div>
+            <div style="font-size:11px;color:var(--text3)" id="dash-friend-missions">0 misiones hoy</div>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px">
+            <span>Este mes</span>
+            <span id="dash-monthly-compare"></span>
+          </div>
+          <div class="xp-bar-wrap">
+            <div class="xp-bar-fill" id="dash-friend-bar" style="width:50%;background:linear-gradient(90deg,#F59E0B,#FCD34D)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today missions -->
+      <div class="section-label">MISIONES DE HOY</div>
+      <div id="dash-daily-missions"></div>
+
+      <!-- Monthly missions preview -->
+      <div class="section-label" style="margin-top:8px">MISIONES MENSUALES</div>
+      <div id="dash-monthly-preview"></div>
+    </div>
+
+    <!-- MISSIONS PAGE -->
+    <div id="page-missions" class="hidden fade-in">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Misiones</div>
+          <div class="page-sub">Completa tus objetivos diarios y mensuales</div>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="missionTab('daily')">Diarias</div>
+        <div class="tab" onclick="missionTab('monthly')">Mensuales</div>
+      </div>
+      <div id="missions-daily-list"></div>
+      <div id="missions-monthly-list" class="hidden"></div>
+    </div>
+
+    <!-- GROUP PAGE -->
+    <div id="page-group" class="hidden fade-in">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="group-page-name">Grupo</div>
+          <div class="page-sub">Vuestro espacio de batalla</div>
+        </div>
+      </div>
+
+      <!-- Monthly results -->
+      <div id="monthly-results-area"></div>
+
+      <!-- Members -->
+      <div class="section-label">JUGADORES</div>
+      <div id="group-members-list"></div>
+
+      <!-- Wheel -->
+      <div class="section-label" style="margin-top:8px">RULETA DEL CASTIGO</div>
+      <div class="card">
+        <div class="switch-row">
+          <div>
+            <div style="font-size:14px;font-weight:600">Activar ruleta mensual</div>
+            <div style="font-size:12px;color:var(--text2)">El perdedor del mes sufre las consecuencias</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="wheel-toggle" onchange="toggleWheel()"><span class="switch-slider"></span></label>
+        </div>
+        <div id="wheel-section" class="hidden" style="margin-top:12px">
+          <div style="font-size:13px;color:var(--text2);margin-bottom:8px">Castigos añadidos:</div>
+          <div id="wheel-items-list"></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input type="text" id="wheel-item-input" placeholder="Añadir castigo..." style="flex:1">
+            <button class="btn btn-sm btn-secondary" onclick="addWheelItem()">+</button>
+          </div>
+          <button class="btn btn-primary" onclick="spinWheel()" style="margin-top:12px">🎰 Girar la ruleta</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TROPHIES PAGE -->
+    <div id="page-trophies" class="hidden fade-in">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Logros</div>
+          <div class="page-sub">Tu sala de trofeos</div>
+        </div>
+      </div>
+      <div class="trophy-grid" id="trophies-grid"></div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="page-profile" class="hidden fade-in">
+      <div class="page-header">
+        <div class="page-title">Perfil</div>
+      </div>
+      <div class="card" style="text-align:center;padding:24px">
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--purple-dim);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;margin:0 auto 12px;color:var(--purple-light)" id="profile-avatar">P</div>
+        <div style="font-size:20px;font-weight:800" id="profile-username">—</div>
+        <div style="font-size:13px;color:var(--purple-light);margin-top:2px" id="profile-level-text">Nivel 1</div>
+      </div>
+      <div class="section-label">TU CÓDIGO DE AMIGO</div>
+      <div class="card" style="padding:12px">
+        <div class="friend-code-display" id="profile-friend-code" style="font-size:22px;padding:12px">——</div>
+        <button class="btn btn-secondary" style="margin-top:10px" onclick="copyFriendCodeProfile()">📋 Copiar código</button>
+      </div>
+      <div class="section-label" style="margin-top:8px">ESTADÍSTICAS</div>
+      <div class="card">
+        <div class="stat-row"><span class="stat-label">XP Total</span><span class="stat-val" id="stat-xp" style="color:var(--purple-light)">0</span></div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">Nivel</span><span class="stat-val" id="stat-level">1</span></div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">Racha actual</span><span class="stat-val" id="stat-streak" style="color:var(--gold)">🔥 0 días</span></div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">Misiones completadas</span><span class="stat-val" id="stat-missions">0</span></div>
+      </div>
+      <div style="padding:0 16px;margin-top:16px">
+        <button class="btn btn-danger" onclick="doLogout()">Cerrar sesión</button>
+      </div>
+      <div style="height:20px"></div>
+    </div>
+  </div>
+
+  <!-- NAV BAR -->
+  <nav id="nav">
+    <button class="nav-btn active" onclick="showPage('dashboard')" id="nav-dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Inicio
+    </button>
+    <button class="nav-btn" onclick="showPage('missions')" id="nav-missions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Misiones
+    </button>
+    <button class="nav-btn" onclick="showPage('group')" id="nav-group" style="position:relative">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Grupo
+    </button>
+    <button class="nav-btn" onclick="showPage('trophies')" id="nav-trophies">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
+      Logros
+    </button>
+    <button class="nav-btn" onclick="showPage('profile')" id="nav-profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Perfil
+    </button>
+  </nav>
+</div>
+
+<!-- LEVEL UP OVERLAY -->
+<div id="levelup-overlay">
+  <div class="particles" id="particles"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:24px">
+    <div style="font-size:13px;color:var(--text2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px">¡Subiste de nivel!</div>
+    <div class="levelup-ring">
+      <div class="levelup-num" id="lu-num">2</div>
+      <div class="levelup-label">NIVEL</div>
+    </div>
+    <div class="levelup-title" id="lu-title">¡IMPARABLE!</div>
+    <div class="levelup-sub" id="lu-sub">Sigue así</div>
+    <button class="btn btn-primary" onclick="closeLevelUp()" style="margin-top:28px;max-width:200px">¡A por más! ⚡</button>
+  </div>
+</div>
+
+<!-- ACHIEVEMENT TOAST -->
+<div id="ach-toast">
+  <div class="ach-icon" id="ach-icon">🏆</div>
+  <div>
+    <div class="ach-text-title" id="ach-title">Logro desbloqueado</div>
+    <div class="ach-text-desc" id="ach-desc">—</div>
+  </div>
+</div>
+
+<!-- WHEEL OVERLAY -->
+<div class="overlay" id="wheel-overlay" onclick="closeWheelOverlay(event)">
+  <div class="modal" style="border-radius:var(--radius);max-height:90vh">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="text-align:center">🎰 Ruleta del Castigo</div>
+    <canvas id="wheel-canvas" width="280" height="280"></canvas>
+    <div id="wheel-spin-result" class="wheel-result hidden"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeWheelOverlay()">Cerrar</button>
+      <button class="btn btn-primary" style="flex:1" id="wheel-spin-btn" onclick="doWheelSpin()">¡Girar!</button>
+    </div>
+  </div>
+</div>
+
+<!-- MISSION EDIT OVERLAY -->
+<div class="overlay" id="mission-edit-overlay" onclick="closeMissionEdit(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Editar misión</div>
+    <div class="form-group"><label>Título de la misión</label><input type="text" id="edit-mission-title" maxlength="60"></div>
+    <div class="form-group"><label>XP</label><input type="number" id="edit-mission-xp" min="10" max="1000"></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeMissionEdit()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveMissionEdit()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://wusqkenwwxaglpifrhtf.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1c3FrZW53d3hhZ2xwaWZyaHRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMjE4NjYsImV4cCI6MjA5Nzc5Nzg2Nn0.PrzYWg_us2r4tnDE0bx6YrorcbrALUVI1-EnPhnjrlA';
+
+const LEVEL_THRESHOLDS = [0,500,1200,2500,4500,7000,10000,13500,17500,22000,27000,32500,38500,45000,52000,59500,67500,76000,85000,95000];
+const LEVEL_TITLES = ['Novato','Aprendiz','Guerrero','Veterano','Élite','Maestro','Gran Maestro','Leyenda','Mito','Dios','Inmortal','Trascendente','Omnipotente','Absoluto','Infinito','Eterno','Supremo','Divino','Cósmico','NEXUS'];
+const ACHIEVEMENTS_DEF = [
+  {id:'first_mission',name:'Despegue',desc:'Completa tu primera misión',icon:'🚀'},
+  {id:'week_streak',name:'En llamas',desc:'7 días de racha',icon:'🔥'},
+  {id:'month_perfect',name:'Disciplina de diamante',desc:'Todas las misiones en 30 días',icon:'💎'},
+  {id:'monthly_winner',name:'Campeón del mes',desc:'Gana el marcador mensual',icon:'🏆'},
+  {id:'double_win',name:'Intratable',desc:'Gana con el doble de XP que tu amigo',icon:'👑'},
+  {id:'bonded',name:'Vinculados',desc:'3 meses en el mismo grupo',icon:'🤝'},
+  {id:'night_owl',name:'Búho nocturno',desc:'Completa una misión tras medianoche',icon:'🌙'},
+  {id:'momentum',name:'Imparable',desc:'3 misiones mensuales en un mes',icon:'⚡'}
+];
+
+let currentUser = null;
+let currentProfile = null;
+let currentGroup = null;
+let friendProfile = null;
+let userAchievements = [];
+let editingMissionId = null;
+let realtimeChannel = null;
+let pendingSetupMissions = [];
+
+async function api(endpoint, method='GET', body=null, token=null) {
+  const headers = {'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+(token||SUPABASE_KEY)};
+  const opts = {method, headers};
+  if(body) opts.body = JSON.stringify(body);
+  const r = await fetch(SUPABASE_URL+endpoint, opts);
+  const text = await r.text();
+  try { return {ok:r.ok, status:r.status, data:text?JSON.parse(text):null}; }
+  catch(e) { return {ok:r.ok, status:r.status, data:text}; }
+}
+
+async function authApi(endpoint, body) {
+  const r = await fetch(SUPABASE_URL+'/auth/v1'+endpoint, {
+    method:'POST', headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY},
+    body:JSON.stringify(body)
+  });
+  return await r.json();
+}
+
+function userApi(endpoint, method='GET', body=null) {
+  return api('/rest/v1'+endpoint, method, body, currentUser?.access_token);
+}
+
+// AUTH
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('login-form').classList.add('hidden');
+  document.getElementById('register-form').classList.add('hidden');
+  if(tab==='login'){document.querySelectorAll('.auth-tab')[0].classList.add('active');document.getElementById('login-form').classList.remove('hidden');}
+  else{document.querySelectorAll('.auth-tab')[1].classList.add('active');document.getElementById('register-form').classList.remove('hidden');}
+}
+
+async function doLogin() {
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-error');
+  err.classList.remove('show');
+  if(!email||!pass){showErr(err,'Rellena todos los campos');return;}
+  const r = await authApi('/token?grant_type=password',{email,password:pass});
+  if(r.error){showErr(err,r.error.message||'Error al entrar');return;}
+  currentUser = r;
+  await loadApp();
+}
+
+async function doRegister() {
+  const username=document.getElementById('reg-username').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const err=document.getElementById('reg-error');
+  err.classList.remove('show');
+  if(!username||!email||!pass){showErr(err,'Rellena todos los campos');return;}
+  if(pass.length<6){showErr(err,'La contraseña debe tener al menos 6 caracteres');return;}
+  const r = await authApi('/signup',{email,password:pass});
+  if(r.error){showErr(err,r.error.message||'Error al registrarse');return;}
+  currentUser = r;
+  // Create profile
+  const pr = await userApi('/profiles','POST',{id:currentUser.user.id, username});
+  if(!pr.ok){showErr(err,'Nombre ya en uso o error. Prueba otro.');currentUser=null;return;}
+  await loadApp();
+}
+
+async function loadApp() {
+  // Load profile
+  const pr = await userApi('/profiles?id=eq.'+currentUser.user.id+'&select=*');
+  if(!pr.ok||!pr.data||!pr.data.length){showAuthScreen();return;}
+  currentProfile = pr.data[0];
+  // Check if has group
+  const gr = await userApi('/group_members?user_id=eq.'+currentProfile.id+'&select=group_id');
+  if(gr.data&&gr.data.length) {
+    const gid = gr.data[0].group_id;
+    const gd = await userApi('/groups?id=eq.'+gid+'&select=*');
+    if(gd.data&&gd.data.length) {
+      currentGroup = gd.data[0];
+      await loadFriendProfile();
+      // Check missions approved
+      const mis = await userApi('/missions?group_id=eq.'+gid+'&user_id=eq.'+currentProfile.id+'&select=*');
+      if(mis.data&&mis.data.length&&mis.data[0].approved_by) {
+        showMainApp();
+      } else if(mis.data&&mis.data.length) {
+        // Check if friend has missions awaiting approval
+        await checkFriendMissionsToApprove();
+      } else {
+        showSetup(4);
+      }
+      return;
+    }
+  }
+  // No group — check friendship
+  const fs = await userApi('/friendships?or=(requester_id.eq.'+currentProfile.id+',receiver_id.eq.'+currentProfile.id+')&status=eq.accepted&select=*');
+  if(fs.data&&fs.data.length) {
+    showSetup(3);
+  } else {
+    showSetup(1);
+  }
+}
+
+async function checkFriendMissionsToApprove() {
+  if(!friendProfile) { showSetup(6); return; }
+  const fmis = await userApi('/missions?group_id=eq.'+currentGroup.id+'&user_id=eq.'+friendProfile.id+'&select=*');
+  if(fmis.data&&fmis.data.length&&!fmis.data[0].approved_by) {
+    // Friend has missions waiting for our approval
+    showSetup(7);
+    renderFriendMissionsReview(fmis.data);
+  } else {
+    showSetup(6);
+  }
+}
+
+function showErr(el, msg) { el.textContent=msg; el.classList.add('show'); }
+
+function showAuthScreen() {
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('setup-screen').classList.add('hidden');
+  document.getElementById('app').classList.add('hidden');
+}
+
+function showSetup(step) {
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('setup-screen').classList.remove('hidden');
+  document.getElementById('app').classList.add('hidden');
+  document.querySelectorAll('.setup-step').forEach(s=>s.classList.remove('active'));
+  const el = document.getElementById('setup-'+step);
+  if(el) el.classList.add('active');
+  if(step===1) renderSetupStep1();
+  if(step===2) renderSetupStep2();
+}
+
+async function renderSetupStep1() {
+  document.getElementById('setup-friend-code').textContent = currentProfile.friend_code || '——';
+}
+
+async function renderSetupStep2() {
+  const el = document.getElementById('pending-requests-area');
+  // Check incoming requests
+  const r = await userApi('/friendships?receiver_id=eq.'+currentProfile.id+'&status=eq.pending&select=*,requester:profiles!requester_id(username,friend_code)');
+  if(r.data&&r.data.length) {
+    el.innerHTML = r.data.map(f=>`
+      <div class="card-sm" style="margin-bottom:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-weight:700">${f.requester.username}</div><div style="font-size:12px;color:var(--text2)">quiere ser tu amigo</div></div>
+          <button class="btn btn-sm btn-primary" onclick="acceptFriendRequest('${f.id}','${f.requester_id}')">Aceptar</button>
+        </div>
+      </div>`).join('');
+  }
+  // Check if already friends
+  const fs = await userApi('/friendships?or=(requester_id.eq.'+currentProfile.id+',receiver_id.eq.'+currentProfile.id+')&status=eq.accepted&select=*');
+  if(fs.data&&fs.data.length) {
+    await loadFriendProfile();
+    document.getElementById('friendship-status-area').classList.add('hidden');
+    document.getElementById('friend-connected').classList.remove('hidden');
+    document.getElementById('friend-connected-name').textContent = '¡Conectado con '+friendProfile.username+'!';
+  }
+}
+
+async function sendFriendRequest() {
+  const code = document.getElementById('friend-code-input').value.trim().toLowerCase();
+  const err = document.getElementById('friend-error');
+  err.classList.remove('show');
+  if(!code){showErr(err,'Introduce un código');return;}
+  if(code===currentProfile.friend_code){showErr(err,'Ese es tu propio código');return;}
+  const r = await userApi('/profiles?friend_code=eq.'+code+'&select=id,username');
+  if(!r.data||!r.data.length){showErr(err,'Código no encontrado');return;}
+  const friend = r.data[0];
+  // Check not already friends
+  const existing = await userApi('/friendships?or=(and(requester_id.eq.'+currentProfile.id+',receiver_id.eq.'+friend.id+'),and(requester_id.eq.'+friend.id+',receiver_id.eq.'+currentProfile.id+'))&select=*');
+  if(existing.data&&existing.data.length){showErr(err,'Ya enviaste solicitud o sois amigos');return;}
+  await userApi('/friendships','POST',{requester_id:currentProfile.id, receiver_id:friend.id, status:'pending'});
+  showErr(err,'¡Solicitud enviada a '+friend.username+'! Pídele que entre a la app.');
+  err.style.color='var(--green)';
+}
+
+async function acceptFriendRequest(fid, requesterId) {
+  await userApi('/friendships?id=eq.'+fid,'PATCH',{status:'accepted'});
+  await loadFriendProfile();
+  renderSetupStep2();
+}
+
+async function loadFriendProfile() {
+  const fs = await userApi('/friendships?or=(requester_id.eq.'+currentProfile.id+',receiver_id.eq.'+currentProfile.id+')&status=eq.accepted&select=*');
+  if(!fs.data||!fs.data.length) return;
+  const f = fs.data[0];
+  const fid = f.requester_id===currentProfile.id ? f.receiver_id : f.requester_id;
+  const fp = await userApi('/profiles?id=eq.'+fid+'&select=*');
+  if(fp.data&&fp.data.length) friendProfile = fp.data[0];
+}
+
+function setupStep(n) { showSetup(n); }
+
+async function createGroup() {
+  const name = document.getElementById('group-name-input').value.trim();
+  const err = document.getElementById('group-error');
+  err.classList.remove('show');
+  if(!name){showErr(err,'Ponle un nombre al grupo');return;}
+  if(!friendProfile){showErr(err,'Primero vincula a tu amigo');return;}
+  const gr = await userApi('/groups','POST',{name, created_by:currentProfile.id});
+  if(!gr.ok){showErr(err,'Error creando el grupo');return;}
+  // Get created group
+  const gd = await userApi('/groups?created_by=eq.'+currentProfile.id+'&order=created_at.desc&limit=1&select=*');
+  currentGroup = gd.data[0];
+  // Add members
+  await userApi('/group_members','POST',{group_id:currentGroup.id, user_id:currentProfile.id});
+  await userApi('/group_members','POST',{group_id:currentGroup.id, user_id:friendProfile.id});
+  showSetup(4);
+  renderGoalInputs();
+}
+
+function renderGoalInputs() {
+  const el = document.getElementById('goals-list');
+  el.innerHTML = '';
+  for(let i=0;i<3;i++) addGoalInput();
+}
+
+function addGoalInput() {
+  const el = document.getElementById('goals-list');
+  const div = document.createElement('div');
+  div.className = 'goal-input-row';
+  div.innerHTML = `<input type="text" placeholder="Ej: Ponerme en forma" maxlength="80"><button class="goal-rm" onclick="this.parentElement.remove()">×</button>`;
+  el.appendChild(div);
+}
+
+async function saveGoals() {
+  const inputs = document.querySelectorAll('#goals-list input');
+  const goals = Array.from(inputs).map(i=>i.value.trim()).filter(Boolean);
+  if(!goals.length){alert('Añade al menos un objetivo');return;}
+  for(const text of goals) {
+    await userApi('/goals','POST',{user_id:currentProfile.id, group_id:currentGroup.id, text});
+  }
+  generateMissionSuggestions(goals);
+  showSetup(5);
+}
+
+function generateMissionSuggestions(goals) {
+  const dailySuggestions = [
+    {title:'Dedicar 30 min a '+goals[0], xp:80},
+    {title:'Completar una tarea pendiente relacionada con tu objetivo', xp:60},
+    {title:'Leer o aprender algo nuevo (20 min)', xp:50},
+    {title:'Hacer ejercicio físico (15 min mínimo)', xp:70},
+    {title:'Revisar tu progreso del día', xp:40},
+  ];
+  const monthlySuggestions = [
+    {title:'Alcanzar un hito clave en: '+goals[0], xp:400},
+    {title:'Completar un proyecto o reto de 30 días', xp:500},
+    {title:'Aprender una habilidad nueva relacionada con tus metas', xp:350},
+    {title:'Mantener una racha de 20 días consecutivos', xp:450},
+  ];
+  const daily = dailySuggestions.slice(0,3);
+  const monthly = monthlySuggestions.slice(0,3);
+  pendingSetupMissions = {daily, monthly};
+  const de = document.getElementById('daily-missions-setup');
+  const me = document.getElementById('monthly-missions-setup');
+  de.innerHTML = daily.map((m,i)=>`
+    <div class="card-sm" style="margin-bottom:8px">
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div style="flex:1">
+          <input type="text" value="${m.title}" id="dm-${i}" style="margin-bottom:6px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;color:var(--text2)">XP:</span>
+            <input type="number" value="${m.xp}" id="dm-xp-${i}" style="width:80px">
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+  me.innerHTML = monthly.map((m,i)=>`
+    <div class="card-sm" style="margin-bottom:8px">
+      <input type="text" value="${m.title}" id="mm-${i}" style="margin-bottom:6px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;color:var(--text2)">XP:</span>
+        <input type="number" value="${m.xp}" id="mm-xp-${i}" style="width:80px">
+      </div>
+    </div>`).join('');
+}
+
+async function saveMissions() {
+  const missions = [];
+  for(let i=0;i<3;i++) {
+    const t=document.getElementById('dm-'+i)?.value.trim();
+    const x=parseInt(document.getElementById('dm-xp-'+i)?.value)||80;
+    if(t) missions.push({group_id:currentGroup.id,user_id:currentProfile.id,title:t,xp_value:x,type:'daily',period_start:new Date().toISOString().split('T')[0]});
+  }
+  for(let i=0;i<3;i++) {
+    const t=document.getElementById('mm-'+i)?.value.trim();
+    const x=parseInt(document.getElementById('mm-xp-'+i)?.value)||400;
+    if(t) missions.push({group_id:currentGroup.id,user_id:currentProfile.id,title:t,xp_value:x,type:'monthly',period_start:new Date().toISOString().split('T')[0]});
+  }
+  for(const m of missions) await userApi('/missions','POST',m);
+  // Check if friend already has missions for us to approve
+  await checkFriendMissionsToApprove();
+}
+
+async function renderFriendMissionsReview(missions) {
+  const el = document.getElementById('friend-missions-review');
+  el.innerHTML = missions.map(m=>`
+    <div class="card-sm" style="margin-bottom:8px">
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px">${m.title}</div>
+      <div class="badge ${m.type==='daily'?'badge-purple':'badge-gold'}" style="margin-bottom:8px">${m.type==='daily'?'Diaria':'Mensual'}</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;color:var(--text2)">XP (puedes ajustar):</span>
+        <input type="number" value="${m.xp_value}" id="review-xp-${m.id}" style="width:80px">
+      </div>
+    </div>`).join('');
+}
+
+async function approveFriendMissions() {
+  const fmis = await userApi('/missions?group_id=eq.'+currentGroup.id+'&user_id=eq.'+friendProfile.id+'&select=*');
+  for(const m of fmis.data||[]) {
+    const newXp = parseInt(document.getElementById('review-xp-'+m.id)?.value)||m.xp_value;
+    await userApi('/missions?id=eq.'+m.id,'PATCH',{xp_value:newXp, approved_by:currentProfile.id});
+  }
+  // Also approve our own missions
+  await userApi('/missions?group_id=eq.'+currentGroup.id+'&user_id=eq.'+currentProfile.id,'PATCH',{approved_by:friendProfile.id});
+  showMainApp();
+}
+
+async function checkMissionStatus() {
+  const mis = await userApi('/missions?group_id=eq.'+currentGroup.id+'&user_id=eq.'+currentProfile.id+'&select=*');
+  if(mis.data&&mis.data.length&&mis.data[0].approved_by) {
+    showMainApp();
+  } else {
+    await checkFriendMissionsToApprove();
+  }
+}
+
+// MAIN APP
+async function showMainApp() {
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('setup-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  await loadUserAchievements();
+  await refreshDashboard();
+  setupRealtime();
+}
+
+async function loadUserAchievements() {
+  const r = await userApi('/user_achievements?user_id=eq.'+currentProfile.id+'&select=achievement_id');
+  userAchievements = (r.data||[]).map(a=>a.achievement_id);
+}
+
+function showPage(page) {
+  ['dashboard','missions','group','trophies','profile'].forEach(p=>{
+    const el=document.getElementById('page-'+p);
+    if(el) el.classList.toggle('hidden',p!==page);
+    const nav=document.getElementById('nav-'+p);
+    if(nav) nav.classList.toggle('active',p===page);
+  });
+  if(page==='dashboard') refreshDashboard();
+  if(page==='missions') refreshMissions();
+  if(page==='group') refreshGroup();
+  if(page==='trophies') refreshTrophies();
+  if(page==='profile') refreshProfile();
+}
+
+function getLevel(xp) {
+  for(let i=LEVEL_THRESHOLDS.length-1;i>=0;i--) if(xp>=LEVEL_THRESHOLDS[i]) return i+1;
+  return 1;
+}
+
+function getXpProgress(xp) {
+  const level = getLevel(xp);
+  const idx = level-1;
+  const curr = LEVEL_THRESHOLDS[idx]||0;
+  const next = LEVEL_THRESHOLDS[idx+1]||LEVEL_THRESHOLDS[idx]+2000;
+  return {pct:Math.min(100,((xp-curr)/(next-curr))*100), needed:next-xp, level};
+}
+
+async function refreshDashboard() {
+  // Refresh profile
+  const pr = await userApi('/profiles?id=eq.'+currentProfile.id+'&select=*');
+  if(pr.data&&pr.data.length) currentProfile = pr.data[0];
+
+  const now = new Date();
+  const hours = now.getHours();
+  const greeting = hours<12?'¡Buenos días':hours<18?'¡Buenas tardes':'¡Buenas noches';
+  document.getElementById('dash-greeting').textContent = greeting+', '+currentProfile.username+'!';
+  document.getElementById('dash-date').textContent = now.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+
+  const {pct, needed, level} = getXpProgress(currentProfile.xp);
+  document.getElementById('dash-level').textContent = level;
+  document.getElementById('dash-xp').textContent = currentProfile.xp.toLocaleString()+' XP';
+  document.getElementById('dash-xp-bar').style.width = pct+'%';
+  document.getElementById('dash-xp-next').textContent = needed.toLocaleString()+' XP para nivel '+(level+1);
+  document.getElementById('dash-streak').textContent = '🔥 '+currentProfile.streak+' días';
+
+  // Friend
+  if(friendProfile) {
+    const fp = await userApi('/profiles?id=eq.'+friendProfile.id+'&select=*');
+    if(fp.data&&fp.data.length) friendProfile = fp.data[0];
+    const fLevel = getLevel(friendProfile.xp);
+    document.getElementById('dash-friend-panel').style.display='block';
+    document.getElementById('dash-friend-name').textContent = friendProfile.username;
+    document.getElementById('dash-friend-level').textContent = 'Nivel '+fLevel+' · '+LEVEL_TITLES[fLevel-1];
+    document.getElementById('dash-friend-xp').textContent = friendProfile.xp.toLocaleString()+' XP';
+    // Friend missions today
+    const today = new Date().toISOString().split('T')[0];
+    const fc = await userApi('/mission_completions?user_id=eq.'+friendProfile.id+'&completed_date=eq.'+today+'&select=*');
+    document.getElementById('dash-friend-missions').textContent = (fc.data?.length||0)+' misiones hoy';
+    // Monthly compare
+    const myXp = currentProfile.xp;
+    const fXp = friendProfile.xp;
+    const total = myXp+fXp||1;
+    const myPct = Math.round(myXp/total*100);
+    document.getElementById('dash-monthly-compare').textContent = 'Tú '+myPct+'% · '+friendProfile.username+' '+(100-myPct)+'%';
+    document.getElementById('dash-friend-bar').style.width = (100-myPct)+'%';
+  }
+
+  // Daily missions
+  if(currentGroup) {
+    const today = new Date().toISOString().split('T')[0];
+    const mis = await userApi('/missions?group_id=eq.'+currentGroup.id+'&user_id=eq.'+currentProfile.id+'&type=eq.daily&approved_by=not.is.null&select=*');
+    const comps = await userApi('/mission_completions?user_id=eq.'+currentProfile.id+'&completed_date=eq.'+today+'&select=mission_id');
+    const doneIds = new Set((comps.data||[]).map(c=>c.mission_id));
+    const el = document.getElementById('dash-daily-missions');
+    el.innerHTML = (mis.data||[]).map(m=>{
+      const done = doneIds.has(m.id);
+      return `<div class="card" style="padding:12px">
+        <div class="mission-item">
+          <div class="mission-check ${done?'done':''}" onclick="toggleMission('${m.id}',${done})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div>
+            <div class="mission-title ${done?'done-text':''}">${m.title}</div>
+            <div class="mission-xp">⚡ ${m.xp_value} XP</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // Monthly preview
+    const mmis = await userApi('/missions?group_id=eq.'+currentGroup.id+'&user_id=eq.'+currentProfile.id+'&type=eq.monthly&approved_by=not.is.null&select=*');
+    const mcomps = await userApi('/mission_completions?user_id=eq.'+currentProfile.id+'&select=mission_id');
+    const allDone = new Set((mcomps.data||[]).map(c=>c.mission_id));
+    document.getElementById('dash-monthly-preview').innerHTML = (mmis.data||[]).map(m=>{
+      const done = allDone.has(m.id);
+      return `<div class="card" style="padding:12px">
+        <div class="mission-item">
+          <div class="mission-check ${done?'done':''}" onclick="toggleMission('${m.id}',${done})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div>
+            <div class="mission-title ${done?'done-text':''}">${m.title}</div>
+            <div class="mission-xp" style="color:var(--gold)">⚡ ${m.xp_value} XP</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+async function toggleMission(missionId, isDone) {
+  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  if(isDone) {
+    await userApi('/mission_completions?mission_id=eq.'+missionId+'&user_id=eq.'+currentProfile.id+'&completed_date=eq.'+today,'DELETE');
+    // Deduct XP
+    const m = await userApi('/missions?id=eq.'+missionId+'&select=xp_value');
+    if(m.data&&m.data.length) {
+      const newXp = Math.max(0, currentProfile.xp - m.data[0].xp_value);
+      await userApi('/profiles?id=eq.'+currentProfile.id,'PATCH',{xp:newXp});
+    }
+  } else {
+    const m = await userApi('/missions?id=eq.'+missionId+'&select=xp_value,type');
+    if(!m.data||!m.data.length) return;
+    const mission = m.data[0];
+    // Check not already done this period
+    await userApi('/mission_completions','POST',{mission_id:missionId, user_id:currentProfile.id, completed_date:today});
+    const oldXp = currentProfile.xp;
+    const newXp = oldXp + mission.xp_value;
+    const oldLevel = getLevel(oldXp);
+    const newLevel = getLevel(newXp);
+    // Update streak
+    const newStreak = currentProfile.streak + 1;
+    await userApi('/profiles?id=eq.'+currentProfile.id,'PATCH',{xp:newXp, streak:newStreak, last_active:today});
+    currentProfile.xp = newXp;
+    currentProfile.streak = newStreak;
+    // Night owl achievement
+    if(now.getHours()>=0&&now.getHours()<6) await unlockAchievement('night_owl');
+    // First mission
+    await unlockAchievement('first_mission');
+    // Streak achievements
+    if(newStreak>=7) await unlockAchievement('week_streak');
+    // Level up?
+    if(newLevel>oldLevel) showLevelUp(newLevel);
+    // Monthly missions check
+    if(mission.type==='monthly') {
+      const mcomps = await userApi('/mission_completions?user_id=eq.'+currentProfile.id+'&select=mission_id');
+      const allMmonthly = await userApi('/missions?group_id=eq.'+currentGroup.id+'&user_id=eq.'+currentProfile.id+'&type=eq.monthly&select=id');
+      const doneMonthly = new Set((mcomps.data||[]).map(c=>c.mission_id));
+      const completedMonthly = (allMmonthly.data||[]).filter(m=>doneMonthly.has(m.id));
+      if(completedMonthly.length>=3) await unlockAchievement('momentum');
+    }
+  }
+  await refreshDashboard();
+  if(!document.getElementById('page-missions').classList.contains('hidden')) refreshMissions();
+}
+
+async function unlockAchievement(id) {
+  if(userAchievements.includes(id)) return;
+  const r = await userApi('/user_achievements','POST',{user_id:currentProfile.id, achievement_id:id});
+  if(r.ok) {
+    userAchievements.push(id);
+    const def = ACHIEVEMENTS_DEF.find(a=>a.id===id);
+    if(def) showAchievementToast(def);
+    // XP bonus
+    const adef = await userApi('/achievements?id=eq.'+id+'&select=xp_bonus');
+    if(adef.data&&adef.data.length&&adef.data[0].xp_bonus) {
+      const newXp = currentProfile.xp + adef.data[0].xp_bonus;
+      await userApi('/profiles?id=eq.'+currentProfile.id,'PATCH',{xp:newXp});
+      currentProfile.xp = newXp;
+    }
+  }
+}
+
+function showAchievementToast(def) {
+  document.getElementById('ach-icon').textContent = def.icon;
+  document.getElementById('ach-title').textContent = '¡'+def.name+'!';
+  document.getElementById('ach-desc').textContent = def.desc;
+  const toast = document.getElementById('ach-toast');
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), 4000);
+}
+
+function showLevelUp(level) {
+  document.getElementById('lu-num').textContent = level;
+  document.getElementById('lu-title').textContent = (LEVEL_TITLES[level-1]||'¡INCREÍBLE!').toUpperCase();
+  document.getElementById('lu-sub').textContent = 'Has alcanzado el nivel '+level;
+  spawnParticles();
+  document.getElementById('levelup-overlay').classList.add('show');
+}
+
+function closeLevelUp() { document.getElementById('levelup-overlay').classList.remove('show'); }
+
+function spawnParticles() {
+  const container = document.getElementById('particles');
+  container.innerHTML = '';
+  const colors = ['#7C3AED','#A78BFA','#F59E0B','#10B981','#fff'];
+  for(let i=0;i<30;i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*1.5}s;animation-duration:${1.5+Math.random()}s`;
+    container.appendChild(p);
+  }
+}
+
+// MISSIONS PAGE
+async function refreshMissions() {
+  if(!currentGroup) return;
+  const today = new Date().toISOString().split('T')[0];
+  const mis = await userApi('/missions?group_id=eq.'+currentGroup.id+'&user_id=eq.'+currentProfile.id+'&approved_by=not.is.null&select=*');
+  const comps = await userApi('/mission_completions?user_id=eq.'+currentProfile.id+'&select=mission_id,completed_date');
+  const todayDone = new Set((comps.data||[]).filter(c=>c.completed_date===today).map(c=>c.mission_id));
+  const allDone = new Set((comps.data||[]).map(c=>c.mission_id));
+  const daily = (mis.data||[]).filter(m=>m.type==='daily');
+  const monthly = (mis.data||[]).filter(m=>m.type==='monthly');
+  const render = (missions, doneSet) => missions.map(m=>{
+    const done = doneSet.has(m.id);
+    return `<div class="card" style="padding:12px">
+      <div class="mission-item">
+        <div class="mission-check ${done?'done':''}" onclick="toggleMission('${m.id}',${done})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="mission-title ${done?'done-text':''}">${m.title}</div>
+          <div class="mission-xp" style="color:${m.type==='monthly'?'var(--gold)':'var(--purple-light)'}">⚡ ${m.xp_value} XP</div>
+        </div>
+        <button onclick="openMissionEdit('${m.id}','${m.title}',${m.xp_value})" style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px">✏️</button>
+      </div>
+    </div>`;
+  }).join('') || '<div style="padding:20px 16px;text-align:center;color:var(--text3);font-size:13px">No hay misiones</div>';
+  document.getElementById('missions-daily-list').innerHTML = render(daily, todayDone);
+  document.getElementById('missions-monthly-list').innerHTML = render(monthly, allDone);
+}
+
+function missionTab(type) {
+  document.querySelectorAll('.tabs .tab').forEach((t,i)=>t.classList.toggle('active',i===(type==='daily'?0:1)));
+  document.getElementById('missions-daily-list').classList.toggle('hidden',type!=='daily');
+  document.getElementById('missions-monthly-list').classList.toggle('hidden',type!=='monthly');
+}
+
+function openMissionEdit(id, title, xp) {
+  editingMissionId = id;
+  document.getElementById('edit-mission-title').value = title;
+  document.getElementById('edit-mission-xp').value = xp;
+  document.getElementById('mission-edit-overlay').classList.add('show');
+}
+
+function closeMissionEdit(e) {
+  if(!e||e.target===document.getElementById('mission-edit-overlay')) {
+    document.getElementById('mission-edit-overlay').classList.remove('show');
+  }
+}
+
+async function saveMissionEdit() {
+  const title = document.getElementById('edit-mission-title').value.trim();
+  const xp = parseInt(document.getElementById('edit-mission-xp').value)||100;
+  if(!title) return;
+  await userApi('/missions?id=eq.'+editingMissionId,'PATCH',{title, xp_value:xp});
+  closeMissionEdit();
+  await refreshMissions();
+  await refreshDashboard();
+}
+
+// GROUP PAGE
+async function refreshGroup() {
+  if(!currentGroup) return;
+  document.getElementById('group-page-name').textContent = currentGroup.name;
+  // Members
+  const el = document.getElementById('group-members-list');
+  const members = [currentProfile, friendProfile].filter(Boolean);
+  el.innerHTML = members.map(m=>{
+    if(!m) return '';
+    const {level} = getXpProgress(m.xp);
+    return `<div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:50%;background:var(--purple-dim);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--purple-light)">${m.username[0].toUpperCase()}</div>
+          <div>
+            <div style="font-weight:700">${m.username} ${m.id===currentProfile.id?'(Tú)':''}</div>
+            <div style="font-size:12px;color:var(--purple-light)">Nivel ${level} · ${LEVEL_TITLES[level-1]}</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:18px;font-weight:800;color:var(--gold)">${m.xp.toLocaleString()}</div>
+          <div style="font-size:11px;color:var(--text3)">XP</div>
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <div class="xp-bar-wrap"><div class="xp-bar-fill" style="width:${getXpProgress(m.xp).pct}%;${m.id!==currentProfile.id?'background:linear-gradient(90deg,#F59E0B,#FCD34D)':''}"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+  // Monthly winner
+  if(friendProfile) {
+    const area = document.getElementById('monthly-results-area');
+    const myXp = currentProfile.xp;
+    const fXp = friendProfile.xp;
+    if(myXp!==fXp) {
+      const winner = myXp>fXp ? currentProfile : friendProfile;
+      const diff = Math.abs(myXp-fXp);
+      area.innerHTML = `<div class="monthly-banner">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:4px">LÍDER ACTUAL</div>
+        <div class="monthly-winner-name">👑 ${winner.username}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">Ventaja de ${diff.toLocaleString()} XP</div>
+        ${diff>=(fXp||1)*2?'<div class="badge badge-gold" style="margin-top:8px">¡Va a por el logro "Intratable"!</div>':''}
+      </div>`;
+    }
+  }
+  // Wheel
+  const gd = await userApi('/groups?id=eq.'+currentGroup.id+'&select=wheel_enabled');
+  if(gd.data&&gd.data.length) {
+    document.getElementById('wheel-toggle').checked = gd.data[0].wheel_enabled;
+    if(gd.data[0].wheel_enabled) document.getElementById('wheel-section').classList.remove('hidden');
+  }
+  const wi = await userApi('/wheel_items?group_id=eq.'+currentGroup.id+'&select=*');
+  const wlist = document.getElementById('wheel-items-list');
+  wlist.innerHTML = (wi.data||[]).map(item=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <span style="flex:1;font-size:13px">🎯 ${item.text}</span>
+      <button onclick="removeWheelItem('${item.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px">×</button>
+    </div>`).join('') || '<div style="font-size:12px;color:var(--text3)">Sin castigos aún</div>';
+}
+
+async function toggleWheel() {
+  const enabled = document.getElementById('wheel-toggle').checked;
+  await userApi('/groups?id=eq.'+currentGroup.id,'PATCH',{wheel_enabled:enabled});
+  document.getElementById('wheel-section').classList.toggle('hidden',!enabled);
+}
+
+async function addWheelItem() {
+  const input = document.getElementById('wheel-item-input');
+  const text = input.value.trim();
+  if(!text) return;
+  await userApi('/wheel_items','POST',{group_id:currentGroup.id, text, added_by:currentProfile.id});
+  input.value = '';
+  refreshGroup();
+}
+
+async function removeWheelItem(id) {
+  await userApi('/wheel_items?id=eq.'+id,'DELETE');
+  refreshGroup();
+}
+
+async function spinWheel() {
+  const wi = await userApi('/wheel_items?group_id=eq.'+currentGroup.id+'&select=*');
+  const items = wi.data||[];
+  if(!items.length){alert('Añade castigos primero');return;}
+  document.getElementById('wheel-overlay').classList.add('show');
+  document.getElementById('wheel-spin-result').classList.add('hidden');
+  drawWheel(items);
+}
+
+function closeWheelOverlay(e) {
+  if(!e||e.target===document.getElementById('wheel-overlay')) {
+    document.getElementById('wheel-overlay').classList.remove('show');
+  }
+}
+
+let wheelItems = [];
+let wheelAngle = 0;
+
+function drawWheel(items) {
+  wheelItems = items;
+  const canvas = document.getElementById('wheel-canvas');
+  const ctx = canvas.getContext('2d');
+  const cx=140,cy=140,r=130;
+  const colors=['#7C3AED','#5B21B6','#A78BFA','#4C1D95','#6D28D9','#8B5CF6'];
+  ctx.clearRect(0,0,280,280);
+  const slice = (Math.PI*2)/items.length;
+  items.forEach((item,i)=>{
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,wheelAngle+i*slice,wheelAngle+(i+1)*slice);
+    ctx.fillStyle=colors[i%colors.length];
+    ctx.fill();
+    ctx.strokeStyle='#0A0A0F';ctx.lineWidth=2;ctx.stroke();
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(wheelAngle+i*slice+slice/2);
+    ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';
+    const text=item.text.length>15?item.text.slice(0,15)+'…':item.text;
+    ctx.fillText(text,r-8,4);
+    ctx.restore();
+  });
+  // Center circle
+  ctx.beginPath();ctx.arc(cx,cy,20,0,Math.PI*2);ctx.fillStyle='#0A0A0F';ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,16,0,Math.PI*2);ctx.fillStyle='#7C3AED';ctx.fill();
+  // Pointer
+  ctx.beginPath();ctx.moveTo(cx+r+10,cy);ctx.lineTo(cx+r-10,cy-10);ctx.lineTo(cx+r-10,cy+10);ctx.fillStyle='#F59E0B';ctx.fill();
+}
+
+async function doWheelSpin() {
+  const btn = document.getElementById('wheel-spin-btn');
+  btn.disabled = true;
+  const totalSpin = 2000+Math.random()*2000;
+  const duration = 4000;
+  const start = Date.now();
+  const canvas = document.getElementById('wheel-canvas');
+  const ctx = canvas.getContext('2d');
+  function animate() {
+    const elapsed = Date.now()-start;
+    const progress = Math.min(1, elapsed/duration);
+    const eased = 1-Math.pow(1-progress,3);
+    wheelAngle = (totalSpin*eased*(Math.PI/180))%(Math.PI*2);
+    drawWheel(wheelItems);
+    if(progress<1){requestAnimationFrame(animate);}
+    else {
+      // Find winner
+      const slice = (Math.PI*2)/wheelItems.length;
+      const normalized = ((Math.PI*2)-(wheelAngle%(Math.PI*2)))%(Math.PI*2);
+      const idx = Math.floor(normalized/slice)%wheelItems.length;
+      const winner = wheelItems[idx];
+      document.getElementById('wheel-spin-result').classList.remove('hidden');
+      document.getElementById('wheel-spin-result').innerHTML = `<div style="font-size:13px;color:var(--text2);margin-bottom:4px">¡El castigo es!</div><div class="wheel-result-text">${winner.text}</div>`;
+      btn.disabled = false;
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+// TROPHIES
+async function refreshTrophies() {
+  await loadUserAchievements();
+  const grid = document.getElementById('trophies-grid');
+  grid.innerHTML = ACHIEVEMENTS_DEF.map(a=>{
+    const unlocked = userAchievements.includes(a.id);
+    return `<div class="trophy-card ${unlocked?'unlocked':''}">
+      <div class="trophy-icon">${a.icon}</div>
+      <div class="trophy-name">${a.name}</div>
+      <div class="trophy-desc">${a.desc}</div>
+      ${unlocked?'<div class="badge badge-gold" style="margin-top:6px">Obtenido</div>':''}
+    </div>`;
+  }).join('');
+}
+
+// PROFILE
+async function refreshProfile() {
+  const pr = await userApi('/profiles?id=eq.'+currentProfile.id+'&select=*');
+  if(pr.data&&pr.data.length) currentProfile = pr.data[0];
+  const {level} = getXpProgress(currentProfile.xp);
+  document.getElementById('profile-avatar').textContent = currentProfile.username[0].toUpperCase();
+  document.getElementById('profile-username').textContent = currentProfile.username;
+  document.getElementById('profile-level-text').textContent = 'Nivel '+level+' · '+LEVEL_TITLES[level-1];
+  document.getElementById('profile-friend-code').textContent = currentProfile.friend_code;
+  document.getElementById('stat-xp').textContent = currentProfile.xp.toLocaleString()+' XP';
+  document.getElementById('stat-level').textContent = level;
+  document.getElementById('stat-streak').textContent = '🔥 '+currentProfile.streak+' días';
+  // Count missions
+  const mc = await userApi('/mission_completions?user_id=eq.'+currentProfile.id+'&select=id');
+  document.getElementById('stat-missions').textContent = mc.data?.length||0;
+}
+
+async function copyFriendCode() {
+  const code = currentProfile?.friend_code||'';
+  if(navigator.clipboard) navigator.clipboard.writeText(code);
+  alert('Código copiado: '+code);
+}
+
+async function copyFriendCodeProfile() { copyFriendCode(); }
+
+async function doLogout() {
+  if(realtimeChannel) realtimeChannel.unsubscribe();
+  currentUser=null;currentProfile=null;currentGroup=null;friendProfile=null;
+  showAuthScreen();
+}
+
+// REALTIME
+function setupRealtime() {
+  if(!currentGroup||!friendProfile) return;
+  // Poll every 30 seconds as simple realtime alternative
+  setInterval(async()=>{
+    if(!document.getElementById('page-dashboard').classList.contains('hidden')) {
+      const fp = await userApi('/profiles?id=eq.'+friendProfile.id+'&select=*');
+      if(fp.data&&fp.data.length) {
+        friendProfile = fp.data[0];
+        refreshDashboard();
+      }
+    }
+  }, 30000);
+}
+
+// INIT
+window.addEventListener('load', async()=>{
+  // Check session in localStorage
+  const session = localStorage.getItem('nexus_session');
+  if(session) {
+    try {
+      currentUser = JSON.parse(session);
+      // Verify token still valid
+      const pr = await userApi('/profiles?id=eq.'+currentUser.user.id+'&select=id');
+      if(pr.ok&&pr.data&&pr.data.length) {
+        await loadApp();
+        return;
+      }
+    } catch(e) {}
+    localStorage.removeItem('nexus_session');
+  }
+  showAuthScreen();
+});
+
+// Save session on login
+const origLogin = doLogin;
+window.doLogin = async function() {
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-error');
+  err.classList.remove('show');
+  if(!email||!pass){showErr(err,'Rellena todos los campos');return;}
+  const r = await authApi('/token?grant_type=password',{email,password:pass});
+  if(r.error){showErr(err,r.error.message||'Error al entrar');return;}
+  currentUser = r;
+  localStorage.setItem('nexus_session', JSON.stringify(r));
+  await loadApp();
+};
+
+window.doRegister = async function() {
+  const username=document.getElementById('reg-username').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const err=document.getElementById('reg-error');
+  err.classList.remove('show');
+  if(!username||!email||!pass){showErr(err,'Rellena todos los campos');return;}
+  if(pass.length<6){showErr(err,'La contraseña debe tener al menos 6 caracteres');return;}
+  const r = await authApi('/signup',{email,password:pass});
+  if(r.error){showErr(err,r.error.message||'Error al registrarse');return;}
+  currentUser = r;
+  localStorage.setItem('nexus_session', JSON.stringify(r));
+  const pr = await userApi('/profiles','POST',{id:currentUser.user.id, username});
+  if(!pr.ok){showErr(err,'Nombre ya en uso. Prueba otro.');currentUser=null;localStorage.removeItem('nexus_session');return;}
+  await loadApp();
+};
+
+const origLogout = doLogout;
+window.doLogout = async function() {
+  if(realtimeChannel) realtimeChannel.unsubscribe();
+  localStorage.removeItem('nexus_session');
+  currentUser=null;currentProfile=null;currentGroup=null;friendProfile=null;
+  showAuthScreen();
+};
+</script>
+</body>
+</html>
