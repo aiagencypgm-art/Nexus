@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NEXUS">
+<meta name="theme-color" content="#08080F">
+<title>NEXUS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080F;
+  --s1:#0F0F1A;
+  --s2:#161622;
+  --s3:#1E1E2E;
+  --border:#252538;
+  --border2:#2E2E45;
+  --purple:#7C3AED;
+  --purple2:#9B5CF6;
+  --purple3:#B07FFF;
+  --purple-dim:#1A0F3A;
+  --purple-glow:rgba(124,58,237,0.15);
+  --gold:#F0A500;
+  --gold2:#FFB830;
+  --gold-dim:#2A1A00;
+  --green:#0EA572;
+  --green-dim:#052B1E;
+  --red:#E5404A;
+  --red-dim:#2A0A0C;
+  --text:#EEEEFF;
+  --text2:#8B8BAA;
+  --text3:#454560;
+  --r:14px;
+  --rs:10px;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-body:'Inter',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{color:var(--text);font-family:var(--font-body);font-size:15px}
+
+/* SCROLLABLE */
+.scroll{overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{width:0}
+
+/* LAYOUT */
+#app{height:100vh;display:flex;flex-direction:column}
+#screen{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:84px}
+#screen::-webkit-scrollbar{width:0}
+
+/* NAV */
+#nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,15,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav-btn{flex:1;padding:10px 0 9px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-family:var(--font-body);font-weight:500;color:var(--text3);border:none;background:none;cursor:pointer;transition:color 0.2s;letter-spacing:0.02em}
+.nav-btn.active{color:var(--purple3)}
+.nav-btn svg{width:21px;height:21px;transition:transform 0.2s}
+.nav-btn.active svg{transform:scale(1.1)}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin:0 16px 12px}
+.card-sm{background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:12px}
+.card-glow{background:var(--s1);border:1px solid var(--purple);border-radius:var(--r);padding:16px;margin:0 16px 12px;box-shadow:0 0 24px var(--purple-glow)}
+
+/* BUTTONS */
+.btn{width:100%;padding:15px;border-radius:var(--r);border:none;font-size:15px;font-weight:600;font-family:var(--font-body);cursor:pointer;transition:all 0.15s;letter-spacing:0.01em}
+.btn:active{transform:scale(0.98);opacity:0.9}
+.btn-primary{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;box-shadow:0 4px 20px rgba(124,58,237,0.35)}
+.btn-secondary{background:var(--s2);color:var(--text);border:1px solid var(--border2)}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid rgba(229,64,74,0.3)}
+.btn-sm{padding:8px 16px;font-size:13px;border-radius:var(--rs);width:auto}
+.btn-ghost{background:none;border:1px solid var(--border2);color:var(--text2);padding:8px 16px;font-size:13px;border-radius:var(--rs);width:auto;font-family:var(--font-body);cursor:pointer}
+
+/* INPUTS */
+input,textarea{width:100%;padding:13px 16px;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:15px;font-family:var(--font-body);outline:none;transition:border-color 0.2s,box-shadow 0.2s}
+input:focus,textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px var(--purple-glow)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+textarea{resize:none;min-height:80px}
+label{display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:7px;letter-spacing:0.02em}
+
+/* XP BAR */
+.xp-bar-wrap{background:var(--s3);border-radius:10px;height:6px;overflow:hidden}
+.xp-bar-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--purple3));border-radius:10px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1)}
+.xp-bar-gold{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.03em}
+.badge-purple{background:var(--purple-dim);color:var(--purple3)}
+.badge-gold{background:var(--gold-dim);color:var(--gold2)}
+.badge-green{background:var(--green-dim);color:var(--green)}
+.badge-red{background:var(--red-dim);color:var(--red)}
+
+/* PAGE HEADER */
+.page-header{padding:24px 16px 8px;display:flex;align-items:flex-start;justify-content:space-between}
+.page-title{font-size:24px;font-weight:700;font-family:var(--font-display);letter-spacing:-0.5px}
+.page-sub{font-size:13px;color:var(--text2);margin-top:3px}
+
+/* SECTION LABEL */
+.section-label{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);padding:0 16px;margin:8px 0 8px}
+
+/* MISSION ITEM */
+.mission-wrap{margin:0 16px 10px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px;transition:border-color 0.2s}
+.mission-wrap:hover{border-color:var(--border2)}
+.mission-wrap.done-wrap{opacity:0.5}
+.mission-row{display:flex;align-items:flex-start;gap:12px}
+.mission-check{width:26px;height:26px;border-radius:8px;border:2px solid var(--border2);background:none;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;margin-top:1px}
+.mission-check.done{background:var(--purple);border-color:var(--purple);box-shadow:0 0 12px rgba(124,58,237,0.4)}
+.mission-check svg{width:14px;height:14px;display:none}
+.mission-check.done svg{display:block}
+.mission-title{font-size:14px;font-weight:500;line-height:1.4}
+.mission-title.done-text{text-decoration:line-through;color:var(--text3)}
+.mission-xp{font-size:12px;font-weight:600;color:var(--gold);margin-top:3px;letter-spacing:0.02em}
+.mission-monthly-xp{color:var(--purple3)}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:12px 0}
+
+/* OVERLAYS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--s1);border-radius:20px 20px 0 0;border-top:1px solid var(--border);padding:20px 16px 36px;width:100%;max-height:85vh;overflow-y:auto;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.34,1.1,0.64,1)}
+.overlay.show .modal{transform:translateY(0)}
+.modal-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-size:18px;font-weight:700;font-family:var(--font-display);margin-bottom:16px}
+
+/* LEVEL UP */
+#levelup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.4s}
+#levelup-overlay.show{opacity:1;pointer-events:all}
+.lu-ring{width:150px;height:150px;border-radius:50%;border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative}
+.lu-ring::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(124,58,237,0.3);animation:ring-pulse 2s ease-in-out infinite}
+.lu-ring::after{content:'';position:absolute;inset:-20px;border-radius:50%;border:1px solid rgba(124,58,237,0.1);animation:ring-pulse 2s ease-in-out infinite 0.5s}
+@keyframes ring-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:0.5}}
+.lu-num{font-size:64px;font-weight:700;font-family:var(--font-display);color:var(--purple3);line-height:1;letter-spacing:-2px}
+.lu-lbl{font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--text3)}
+.particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.particle{position:absolute;border-radius:50%;animation:float-up 2.5s ease-out forwards}
+@keyframes float-up{0%{transform:translateY(100vh) scale(1);opacity:1}100%{transform:translateY(-20vh) scale(0);opacity:0}}
+
+/* ACHIEVEMENT TOAST */
+#ach-toast{position:fixed;top:env(safe-area-inset-top,0);top:max(16px,env(safe-area-inset-top));left:16px;right:16px;background:var(--gold-dim);border:1px solid rgba(240,165,0,0.3);border-radius:var(--r);padding:14px 16px;z-index:400;display:flex;align-items:center;gap:14px;transform:translateY(-120px);transition:transform 0.4s cubic-bezier(0.34,1.2,0.64,1);box-shadow:0 8px 32px rgba(240,165,0,0.15)}
+#ach-toast.show{transform:translateY(0)}
+.ach-icon-wrap{width:44px;height:44px;border-radius:12px;background:rgba(240,165,0,0.15);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+
+/* AUTH */
+#auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--bg);background-image:radial-gradient(ellipse at 50% 0%,rgba(124,58,237,0.08) 0%,transparent 60%)}
+.auth-wordmark{font-family:var(--font-display);font-size:42px;font-weight:700;letter-spacing:-2px;margin-bottom:4px;color:var(--text)}
+.auth-wordmark span{color:var(--purple3)}
+.auth-tagline{font-size:14px;color:var(--text3);margin-bottom:40px;letter-spacing:0.05em;text-transform:uppercase;font-weight:500}
+.auth-card{width:100%;max-width:360px;background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:24px}
+.auth-tabs{display:flex;margin-bottom:24px;background:var(--s2);border-radius:var(--rs);padding:4px;gap:4px}
+.auth-tab{flex:1;padding:9px;text-align:center;font-size:14px;font-weight:600;font-family:var(--font-body);border-radius:8px;cursor:pointer;transition:all 0.2s;color:var(--text3)}
+.auth-tab.active{background:var(--purple);color:#fff;box-shadow:0 2px 12px rgba(124,58,237,0.3)}
+.form-group{margin-bottom:16px}
+.err{color:var(--red);font-size:12px;margin-top:8px;display:none;font-weight:500}
+.err.show{display:block}
+
+/* SETUP */
+#setup-screen{min-height:100vh;display:flex;flex-direction:column;padding:env(safe-area-inset-top,24px) 20px 32px;background:var(--bg)}
+.setup-step{display:none;flex:1;flex-direction:column}
+.setup-step.active{display:flex}
+.setup-emoji{font-size:44px;margin-bottom:12px}
+.setup-title{font-size:26px;font-weight:700;font-family:var(--font-display);letter-spacing:-0.5px}
+.setup-desc{font-size:14px;color:var(--text2);margin-top:8px;line-height:1.6;margin-bottom:24px}
+.friend-code{font-size:26px;font-weight:700;font-family:var(--font-display);letter-spacing:6px;text-align:center;color:var(--purple3);background:var(--purple-dim);border-radius:var(--rs);padding:18px;margin:12px 0;border:1px solid rgba(124,58,237,0.2)}
+.goal-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.goal-row input{flex:1}
+.goal-rm{background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:4px;line-height:1}
+
+/* SWITCH */
+.switch-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+.switch{position:relative;width:46px;height:28px}
+.switch input{opacity:0;width:0;height:0}
+.sw-slider{position:absolute;inset:0;background:var(--s3);border:1px solid var(--border2);border-radius:14px;cursor:pointer;transition:all 0.3s}
+.sw-slider:before{content:'';position:absolute;width:22px;height:22px;left:2px;bottom:2px;background:var(--text3);border-radius:50%;transition:all 0.3s}
+input:checked+.sw-slider{background:var(--purple);border-color:var(--purple);box-shadow:0 0 12px rgba(124,58,237,0.3)}
+input:checked+.sw-slider:before{transform:translateX(18px);background:#fff}
+
+/* TABS */
+.tabs{display:flex;padding:0 16px;margin-bottom:4px;border-bottom:1px solid var(--border)}
+.tab{padding:12px 16px;font-size:13px;font-weight:600;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;margin-bottom:-1px}
+.tab.active{color:var(--purple3);border-bottom-color:var(--purple3)}
+
+/* TROPHIES */
+.trophy-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}
+.trophy-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px 12px;text-align:center;transition:all 0.3s;position:relative;overflow:hidden}
+.trophy-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(255,255,255,0.01));pointer-events:none}
+.trophy-card.unlocked{border-color:rgba(240,165,0,0.4);background:linear-gradient(135deg,var(--s1),var(--gold-dim))}
+.trophy-locked{opacity:0.35}
+.trophy-icon{font-size:32px;margin-bottom:8px;display:block}
+.trophy-name{font-size:12px;font-weight:600;font-family:var(--font-display);letter-spacing:0.02em}
+.trophy-desc{font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4}
+
+/* STAT ROW */
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
+.stat-label{font-size:13px;color:var(--text2)}
+.stat-val{font-size:14px;font-weight:600;font-family:var(--font-display)}
+
+/* MONTHLY BANNER */
+.monthly-banner{background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(240,165,0,0.08));border:1px solid rgba(240,165,0,0.2);border-radius:var(--r);padding:18px 16px;margin:0 16px 12px;text-align:center}
+
+/* SPINNER */
+.spinner{width:28px;height:28px;border:3px solid var(--border2);border-top-color:var(--purple);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* PROGRESS BAR DAY */
+.day-progress{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin:0 16px 12px}
+.day-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.day-label{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3)}
+.day-count{font-size:13px;font-weight:600;color:var(--purple3)}
+.day-xp{font-size:13px;font-weight:600;color:var(--gold)}
+
+/* HERO LEVEL */
+.hero-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin:0 16px 12px;position:relative;overflow:hidden}
+.hero-card::after{content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:radial-gradient(circle,rgba(124,58,237,0.1),transparent);pointer-events:none}
+.hero-level-num{font-size:48px;font-weight:700;font-family:var(--font-display);color:var(--purple3);line-height:1;letter-spacing:-2px}
+.hero-level-title{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:0.05em;text-transform:uppercase;margin-top:2px}
+
+/* RIVAL CARD */
+.rival-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:14px;margin-top:10px}
+.rival-name{font-size:15px;font-weight:600;font-family:var(--font-display)}
+.rival-level{font-size:11px;color:var(--purple3);font-weight:500;margin-top:1px}
+.rival-xp{font-size:20px;font-weight:700;font-family:var(--font-display);color:var(--gold)}
+
+/* AVATAR */
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--font-display);flex-shrink:0}
+.avatar-sm{width:36px;height:36px;font-size:14px}
+.avatar-md{width:48px;height:48px;font-size:18px}
+.avatar-lg{width:72px;height:72px;font-size:28px}
+.avatar-purple{background:var(--purple-dim);border:2px solid rgba(124,58,237,0.4);color:var(--purple3)}
+.avatar-gold{background:var(--gold-dim);border:2px solid rgba(240,165,0,0.3);color:var(--gold2)}
+
+/* PLAYER CARD */
+.player-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin:0 16px 10px}
+.player-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.player-info{flex:1}
+.player-name{font-size:15px;font-weight:600;font-family:var(--font-display)}
+.player-level{font-size:12px;color:var(--purple3);font-weight:500}
+.player-xp{font-size:22px;font-weight:700;font-family:var(--font-display);color:var(--gold);text-align:right}
+
+/* WHEEL */
+#wheel-canvas{display:block;margin:0 auto;border-radius:50%;box-shadow:0 0 40px rgba(124,58,237,0.2)}
+.wheel-result-card{text-align:center;padding:20px;background:var(--gold-dim);border:1px solid rgba(240,165,0,0.2);border-radius:var(--r);margin-top:16px}
+
+/* COUNTDOWN */
+.countdown-wrap{background:var(--s2);border-radius:var(--rs);padding:12px;display:flex;align-items:center;justify-content:space-between}
+.countdown-label{font-size:12px;color:var(--text3);font-weight:500}
+.countdown-val{font-size:16px;font-weight:700;font-family:var(--font-display);color:var(--purple3)}
+
+.hidden{display:none!important}
+.fade-in{animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div style="text-align:center;margin-bottom:0">
+    <div class="auth-wordmark">⚡ <span>NEX</span>US</div>
+    <div class="auth-tagline">Compite · Crece · Domina</div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">Entrar</div>
+      <div class="auth-tab" id="tab-reg" onclick="switchTab('reg')">Registrarse</div>
+    </div>
+    <div id="login-form">
+      <div class="form-group"><label>Email</label><input type="email" id="l-email" placeholder="tu@email.com" autocomplete="email"></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"></div>
+      <div class="err" id="l-err"></div>
+      <button class="btn btn-primary" id="l-btn" onclick="doLogin()" style="margin-top:8px">Entrar</button>
+    </div>
+    <div id="reg-form" class="hidden">
+      <div class="form-group"><label>Nombre de usuario</label><input type="text" id="r-user" placeholder="TuNombre" maxlength="20" autocomplete="username"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="r-email" placeholder="tu@email.com" autocomplete="email"></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="r-pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+      <div class="err" id="r-err"></div>
+      <button class="btn btn-primary" id="r-btn" onclick="doReg()" style="margin-top:8px">Crear cuenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div id="setup-screen" class="hidden">
+  <!-- 1: Welcome -->
+  <div class="setup-step active" id="setup-1">
+    <div style="flex:1">
+      <div class="setup-emoji">⚡</div>
+      <div class="setup-title">Bienvenido a NEXUS</div>
+      <div class="setup-desc">Tu código de amigo — compártelo con tu rival para vincularos.</div>
+      <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Tu código de amigo</div>
+        <div class="friend-code" id="s-code">——————</div>
+        <button class="btn btn-secondary" style="margin-top:12px" onclick="copyCode()">📋 Copiar código</button>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="goS(2)">Continuar →</button>
+  </div>
+
+  <!-- 2: Friend -->
+  <div class="setup-step" id="setup-2">
+    <div style="flex:1">
+      <div class="setup-emoji">🤝</div>
+      <div class="setup-title">Vincula a tu rival</div>
+      <div class="setup-desc">Introduce el código de tu amigo para enviarle solicitud.</div>
+      <div id="fr-area">
+        <div class="form-group"><label>Código de amigo</label><input type="text" id="fr-code" placeholder="Ej: a1b2c3d4" maxlength="8"></div>
+        <div class="err" id="fr-err"></div>
+        <button class="btn btn-primary" onclick="sendFR()">Enviar solicitud</button>
+        <div style="margin:16px 0;text-align:center;font-size:13px;color:var(--text3)">Solicitudes recibidas</div>
+        <div id="fr-pending"></div>
+      </div>
+      <div id="fr-ok" class="hidden">
+        <div class="card-glow" style="text-align:center;padding:24px">
+          <div style="font-size:36px;margin-bottom:8px">✅</div>
+          <div style="font-weight:700;font-size:16px;font-family:var(--font-display)" id="fr-ok-name">¡Conectado!</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-secondary" style="flex:1" onclick="goS(1)">←</button>
+      <button class="btn btn-primary" style="flex:3" onclick="goS(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- 3: Group -->
+  <div class="setup-step" id="setup-3">
+    <div style="flex:1">
+      <div class="setup-emoji">⚔️</div>
+      <div class="setup-title">Crea el grupo</div>
+      <div class="setup-desc">Dale un nombre a vuestro grupo de batalla.</div>
+      <div class="form-group"><label>Nombre del grupo</label><input type="text" id="g-name" placeholder="Ej: Los Imparables" maxlength="30"></div>
+      <div class="err" id="g-err"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-secondary" style="flex:1" onclick="goS(2)">←</button>
+      <button class="btn btn-primary" style="flex:3" onclick="createGrp()">Crear →</button>
+    </div>
+  </div>
+
+  <!-- 4: Goals -->
+  <div class="setup-step" id="setup-4">
+    <div style="flex:1;overflow-y:auto">
+      <div class="setup-emoji">🎯</div>
+      <div class="setup-title">Tus objetivos</div>
+      <div class="setup-desc">¿Qué quieres lograr a largo plazo? Serán la base de tus misiones.</div>
+      <div id="goals-list"></div>
+      <button class="btn-ghost" onclick="addGoal()" style="width:100%;margin-bottom:16px">+ Añadir objetivo</button>
+    </div>
+    <button class="btn btn-primary" onclick="saveGoals()">Guardar →</button>
+  </div>
+
+  <!-- 5: Missions -->
+  <div class="setup-step" id="setup-5">
+    <div style="flex:1;overflow-y:auto">
+      <div class="setup-emoji">📋</div>
+      <div class="setup-title">Tus misiones</div>
+      <div class="setup-desc">Edítalas a tu gusto antes de enviarlas a tu rival.</div>
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--purple3);margin-bottom:8px">Diarias</div>
+      <div id="dm-setup"></div>
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin:16px 0 8px">Mensuales</div>
+      <div id="mm-setup"></div>
+    </div>
+    <button class="btn btn-primary" onclick="saveMissions()" style="margin-top:16px">Enviar al rival →</button>
+  </div>
+
+  <!-- 6: Waiting -->
+  <div class="setup-step" id="setup-6">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 0">
+      <div style="font-size:48px;margin-bottom:16px">⏳</div>
+      <div class="setup-title" style="margin-bottom:8px">Esperando a tu rival</div>
+      <div class="setup-desc" style="margin-bottom:24px">Tu rival debe revisar y aprobar tus misiones. Esta pantalla se actualiza sola.</div>
+      <div class="spinner"></div>
+    </div>
+    <button class="btn btn-secondary" onclick="checkStatus()">Comprobar ahora</button>
+  </div>
+
+  <!-- 7: Approve -->
+  <div class="setup-step" id="setup-7">
+    <div style="flex:1;overflow-y:auto">
+      <div class="setup-emoji">✅</div>
+      <div class="setup-title">Misiones de tu rival</div>
+      <div class="setup-desc">Puedes ajustar el XP si lo consideras necesario.</div>
+      <div id="fr-review"></div>
+    </div>
+    <button class="btn btn-primary" id="approve-btn" onclick="approveMis()" style="margin-top:16px">✅ Aprobar y empezar</button>
+  </div>
+</div>
+<div id="join-toast" style="position:fixed;top:max(16px,env(safe-area-inset-top));left:16px;right:16px;background:var(--green-dim);border:1px solid rgba(14,165,114,0.3);border-radius:var(--r);padding:14px 16px;z-index:600;text-align:center;font-size:13px;font-weight:600;color:var(--green);transform:translateY(-120px);transition:transform 0.4s cubic-bezier(0.34,1.2,0.64,1)"></div>
+
+<!-- MAIN APP -->
+<div id="app" class="hidden">
+  <div id="screen">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="fade-in">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="d-greeting">¡Hola!</div>
+          <div class="page-sub" id="d-date"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="text-align:right">
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3)">Racha</div>
+            <div style="font-size:16px;font-weight:700;font-family:var(--font-display);color:var(--gold)" id="d-streak">🔥 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero: Level + XP -->
+      <div class="hero-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div>
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Nivel</div>
+            <div class="hero-level-num" id="d-level">1</div>
+            <div class="hero-level-title" id="d-level-name">Novato</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">XP Total</div>
+            <div style="font-size:24px;font-weight:700;font-family:var(--font-display);color:var(--purple3)" id="d-xp">0</div>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="xp-bar-wrap"><div class="xp-bar-fill" id="d-xp-bar" style="width:0%"></div></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:5px" id="d-xp-next">0 XP para nivel 2</div>
+        </div>
+        <!-- Rival inline -->
+        <div class="rival-card" id="d-rival" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="avatar avatar-sm avatar-gold" id="d-rival-av">C</div>
+              <div>
+                <div class="rival-name" id="d-rival-name">—</div>
+                <div class="rival-level" id="d-rival-level">Nivel 1</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="rival-xp" id="d-rival-xp">0</div>
+              <div style="font-size:11px;color:var(--text3)" id="d-rival-mis">0 hoy</div>
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <div class="xp-bar-wrap"><div class="xp-bar-fill xp-bar-gold" id="d-rival-bar" style="width:50%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily progress -->
+      <div class="day-progress" id="d-day-progress" style="display:none">
+        <div class="day-row">
+          <span class="day-label">Hoy</span>
+          <div style="display:flex;gap:12px;align-items:center">
+            <span class="day-count" id="d-day-count">0/3 misiones</span>
+            <span class="day-xp" id="d-day-xp">0 XP</span>
+          </div>
+        </div>
+        <div class="xp-bar-wrap" style="height:4px"><div class="xp-bar-fill" id="d-day-bar" style="width:0%"></div></div>
+      </div>
+
+      <div class="section-label">Misiones de hoy</div>
+      <div id="d-daily"></div>
+
+      <div class="section-label" style="margin-top:4px">Misiones mensuales</div>
+      <div id="d-monthly"></div>
+    </div>
+
+    <!-- MISSIONS -->
+    <div id="page-missions" class="hidden fade-in">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Misiones</div>
+          <div class="page-sub">Tus objetivos diarios y mensuales</div>
+        </div>
+      </div>
+      <!-- Progress summary -->
+      <div class="day-progress" id="m-progress" style="margin-bottom:4px">
+        <div class="day-row">
+          <span class="day-label">Progreso hoy</span>
+          <div style="display:flex;gap:12px">
+            <span class="day-count" id="m-count">0/3</span>
+            <span class="day-xp" id="m-xp">0 XP ganados</span>
+          </div>
+        </div>
+        <div class="xp-bar-wrap" style="height:4px"><div class="xp-bar-fill" id="m-bar" style="width:0%"></div></div>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="misTab('daily')">Diarias</div>
+        <div class="tab" onclick="misTab('monthly')">Mensuales</div>
+      </div>
+      <div id="m-daily"></div>
+      <div id="m-monthly" class="hidden"></div>
+    </div>
+
+    <!-- GROUP -->
+    <div id="page-group" class="hidden fade-in">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="g-title">Grupo</div>
+          <div class="page-sub">Vuestro espacio de batalla</div>
+        </div>
+      </div>
+
+      <!-- Countdown -->
+      <div style="padding:0 16px;margin-bottom:12px">
+        <div class="countdown-wrap">
+          <div class="countdown-label">🗓 Reset mensual en</div>
+          <div class="countdown-val" id="g-countdown">— días</div>
+        </div>
+      </div>
+
+      <div id="g-banner"></div>
+
+      <div class="section-label">Jugadores</div>
+      <div id="g-members"></div>
+
+      <div class="section-label" style="margin-top:4px">Ruleta del castigo</div>
+      <div class="card">
+        <div class="switch-row">
+          <div>
+            <div style="font-size:14px;font-weight:600;font-family:var(--font-display)">Activar ruleta mensual</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px">El perdedor del mes sufre las consecuencias</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="wh-toggle" onchange="toggleWheel()"><span class="sw-slider"></span></label>
+        </div>
+        <div id="wh-section" class="hidden" style="margin-top:4px">
+          <div style="font-size:12px;color:var(--text2);margin-bottom:10px">Castigos:</div>
+          <div id="wh-items"></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <input type="text" id="wh-input" placeholder="Añadir castigo..." style="flex:1">
+            <button class="btn-ghost" onclick="addWI()">+</button>
+          </div>
+          <button class="btn btn-primary" onclick="spinWheel()" style="margin-top:14px">🎰 Girar la ruleta</button>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:4px">Historial mensual</div>
+      <div style="padding:0 16px" id="g-history"></div>
+    </div>
+
+    <!-- TROPHIES -->
+    <div id="page-trophies" class="hidden fade-in">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Logros</div>
+          <div class="page-sub">Tu sala de trofeos</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.08em;text-transform:uppercase">Obtenidos</div>
+          <div style="font-size:22px;font-weight:700;font-family:var(--font-display);color:var(--gold)" id="tr-count">0/8</div>
+        </div>
+      </div>
+      <div class="trophy-grid" id="tr-grid"></div>
+      <div style="height:16px"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="page-profile" class="hidden fade-in">
+      <div class="page-header"><div class="page-title">Perfil</div></div>
+
+      <div class="card" style="text-align:center;padding:28px 16px">
+        <div class="avatar avatar-lg avatar-purple" style="margin:0 auto 14px" id="p-av">G</div>
+        <div style="font-size:22px;font-weight:700;font-family:var(--font-display)" id="p-name">—</div>
+        <div style="font-size:13px;color:var(--purple3);font-weight:500;margin-top:4px" id="p-level">Nivel 1 · Novato</div>
+      </div>
+
+      <div class="section-label">Tu código de amigo</div>
+      <div class="card" style="padding:14px">
+        <div class="friend-code" id="p-code" style="font-size:20px;padding:14px;margin:0 0 12px">——</div>
+        <button class="btn btn-secondary" onclick="copyCode()">📋 Copiar código</button>
+      </div>
+
+      <div class="section-label" style="margin-top:4px">Estadísticas</div>
+      <div class="card">
+        <div class="stat-row"><span class="stat-label">XP Total</span><span class="stat-val" id="p-xp" style="color:var(--purple3)">0</span></div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">Nivel</span><span class="stat-val" id="p-lv">1</span></div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">Racha actual</span><span class="stat-val" id="p-streak" style="color:var(--gold)">🔥 0 días</span></div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">Misiones completadas</span><span class="stat-val" id="p-mis">0</span></div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">Logros</span><span class="stat-val" id="p-achs" style="color:var(--gold)">0 / 8</span></div>
+      </div>
+
+      <div style="padding:0 16px;margin-top:16px">
+        <button class="btn btn-danger" onclick="doLogout()">Cerrar sesión</button>
+      </div>
+      <div style="height:24px"></div>
+    </div>
+  </div>
+
+  <nav id="nav">
+    <button class="nav-btn active" onclick="showPage('dashboard')" id="nav-dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Inicio
+    </button>
+    <button class="nav-btn" onclick="showPage('missions')" id="nav-missions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Misiones
+    </button>
+    <button class="nav-btn" onclick="showPage('group')" id="nav-group">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Grupo
+    </button>
+    <button class="nav-btn" onclick="showPage('trophies')" id="nav-trophies">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
+      Logros
+    </button>
+    <button class="nav-btn" onclick="showPage('profile')" id="nav-profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Perfil
+    </button>
+  </nav>
+</div>
+
+<!-- LEVEL UP -->
+<div id="lu-overlay">
+  <div class="particles" id="particles"></div>
+  <div style="position:relative;z-index:1;text-align:center;padding:24px">
+    <div style="font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--text3);margin-bottom:20px">¡Subiste de nivel!</div>
+    <div class="lu-ring">
+      <div class="lu-num" id="lu-num">2</div>
+      <div class="lu-lbl">Nivel</div>
+    </div>
+    <div style="font-size:30px;font-weight:700;font-family:var(--font-display);margin-top:24px;letter-spacing:-0.5px" id="lu-title">¡IMPARABLE!</div>
+    <div style="font-size:14px;color:var(--text2);margin-top:8px" id="lu-sub">Has alcanzado el nivel 2</div>
+    <button class="btn btn-primary" onclick="closeLU()" style="margin-top:32px;max-width:220px">¡A por más! ⚡</button>
+  </div>
+</div>
+
+<!-- MONTHLY RESULT OVERLAY -->
+<div id="monthres-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:550;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.4s">
+  <div style="text-align:center;padding:24px;max-width:340px">
+    <div style="font-size:56px;margin-bottom:12px" id="monthres-emoji">🏆</div>
+    <div style="font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Resultado del mes</div>
+    <div style="font-size:24px;font-weight:700;font-family:var(--font-display)" id="monthres-title">¡Ganaste el mes!</div>
+    <div style="font-size:14px;color:var(--text2);margin-top:8px" id="monthres-detail">0 XP vs 0 XP</div>
+    <div id="monthres-punishment" class="hidden" style="margin-top:20px;padding:16px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r)"></div>
+    <button class="btn btn-primary" onclick="closeMonthRes()" style="margin-top:28px">Empezar nuevo mes ⚡</button>
+  </div>
+</div>
+
+<!-- ACHIEVEMENT TOAST -->
+<div id="ach-toast">
+  <div class="ach-icon-wrap" id="ach-icon">🏆</div>
+  <div>
+    <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:3px">Logro desbloqueado</div>
+    <div style="font-size:14px;font-weight:600;font-family:var(--font-display)" id="ach-title">—</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:1px" id="ach-desc">—</div>
+  </div>
+</div>
+
+<!-- WHEEL OVERLAY -->
+<div class="overlay" id="wh-overlay" onclick="closeWO(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="text-align:center">🎰 Ruleta del Castigo</div>
+    <canvas id="wh-canvas" width="280" height="280" style="display:block;margin:0 auto;border-radius:50%;box-shadow:0 0 40px rgba(124,58,237,0.2)"></canvas>
+    <div id="wh-result" class="hidden">
+      <div class="wheel-result-card">
+        <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">¡El castigo es!</div>
+        <div style="font-size:22px;font-weight:700;font-family:var(--font-display)" id="wh-result-text"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeWO()">Cerrar</button>
+      <button class="btn btn-primary" style="flex:1" id="spin-btn" onclick="doSpin()">¡Girar!</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MISSION OVERLAY -->
+<div class="overlay" id="edit-overlay" onclick="closeEdit(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Editar misión</div>
+    <div class="form-group"><label>Título</label><input type="text" id="e-title" maxlength="60"></div>
+    <div class="form-group"><label>XP</label><input type="number" id="e-xp" min="10" max="1000"></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeEdit()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveEdit()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://wusqkenwwxaglpifrhtf.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1c3FrZW53d3hhZ2xwaWZyaHRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMjE4NjYsImV4cCI6MjA5Nzc5Nzg2Nn0.PrzYWg_us2r4tnDE0bx6YrorcbrALUVI1-EnPhnjrlA';
+const LVL=[0,500,1200,2500,4500,7000,10000,13500,17500,22000,27000,32500,38500,45000,52000,59500,67500,76000,85000,95000];
+const LVL_N=['Novato','Aprendiz','Guerrero','Veterano','Élite','Maestro','Gran Maestro','Leyenda','Mito','Dios','Inmortal','Trascendente','Omnipotente','Absoluto','Infinito','Eterno','Supremo','Divino','Cósmico','NEXUS'];
+const ACHS=[
+  {id:'first_mission',name:'Despegue',desc:'Primera misión completada',icon:'🚀'},
+  {id:'week_streak',name:'En llamas',desc:'7 días de racha',icon:'🔥'},
+  {id:'month_perfect',name:'Diamante',desc:'Todas las misiones en 30 días',icon:'💎'},
+  {id:'monthly_winner',name:'Campeón',desc:'Ganar el marcador mensual',icon:'🏆'},
+  {id:'double_win',name:'Intratable',desc:'Ganar con el doble de XP',icon:'👑'},
+  {id:'bonded',name:'Vinculados',desc:'3 meses en el mismo grupo',icon:'🤝'},
+  {id:'night_owl',name:'Búho',desc:'Misión completada tras medianoche',icon:'🌙'},
+  {id:'momentum',name:'Imparable',desc:'3 misiones mensuales en un mes',icon:'⚡'}
+];
+let U=null,P=null,G=null,F=null,UA=[],editId=null,wAngle=0,wItems=[];
+
+async function req(path,method='GET',body=null,token=null){
+  const h={'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+(token||KEY)};
+  const o={method,headers:h};
+  if(body)o.body=JSON.stringify(body);
+  const r=await fetch(SB+path,o);
+  const t=await r.text();
+  try{return{ok:r.ok,status:r.status,data:t?JSON.parse(t):null};}
+  catch(e){return{ok:r.ok,status:r.status,data:t};}
+}
+function db(path,method='GET',body=null){return req('/rest/v1'+path,method,body,U?.access_token);}
+async function authR(path,body){
+  const r=await fetch(SB+'/auth/v1'+path,{method:'POST',headers:{'Content-Type':'application/json','apikey':KEY},body:JSON.stringify(body)});
+  return r.json();
+}
+function showErr(id,msg){const e=document.getElementById(id);e.textContent=msg;e.classList.add('show');}
+function hideErr(id){document.getElementById(id).classList.remove('show');}
+
+function switchTab(t){
+  document.getElementById('tab-login').classList.toggle('active',t==='login');
+  document.getElementById('tab-reg').classList.toggle('active',t==='reg');
+  document.getElementById('login-form').classList.toggle('hidden',t!=='login');
+  document.getElementById('reg-form').classList.toggle('hidden',t!=='reg');
+}
+
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  hideErr('l-err');
+  if(!email||!pass){showErr('l-err','Rellena todos los campos');return;}
+  const btn=document.getElementById('l-btn');
+  btn.textContent='Entrando...';btn.disabled=true;
+  try{
+    const r=await authR('/token?grant_type=password',{email,password:pass});
+    if(r.error){showErr('l-err',r.error.message||'Email o contraseña incorrectos');return;}
+    if(!r.access_token||!r.user){showErr('l-err','Error inesperado. Inténtalo de nuevo.');return;}
+    U=r;localStorage.setItem('nx_s',JSON.stringify(r));
+    const pr=await db('/profiles?id=eq.'+r.user.id+'&select=*');
+    if(!pr.data||!pr.data.length){showErr('l-err','Cuenta encontrada pero falta perfil. Ve a Registrarse.');return;}
+    await loadApp();
+  }finally{btn.textContent='Entrar';btn.disabled=false;}
+}
+
+async function doReg(){
+  const username=document.getElementById('r-user').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  const pass=document.getElementById('r-pass').value;
+  hideErr('r-err');
+  if(!username||!email||!pass){showErr('r-err','Rellena todos los campos');return;}
+  if(pass.length<6){showErr('r-err','La contraseña debe tener al menos 6 caracteres');return;}
+  const btn=document.getElementById('r-btn');
+  btn.textContent='Creando...';btn.disabled=true;
+  try{
+    const r=await authR('/signup',{email,password:pass});
+    if(r.error){showErr('r-err',r.error.message||'Error al registrarse');return;}
+    const login=await authR('/token?grant_type=password',{email,password:pass});
+    if(login.error||!login.access_token){showErr('r-err','Cuenta creada. Usa "Entrar" con tus datos.');return;}
+    U=login;localStorage.setItem('nx_s',JSON.stringify(login));
+    const pr=await db('/profiles','POST',{id:login.user.id,username});
+    if(!pr.ok){showErr('r-err','Nombre ya en uso. Prueba otro.');U=null;localStorage.removeItem('nx_s');return;}
+    await loadApp();
+  }finally{btn.textContent='Crear cuenta';btn.disabled=false;}
+}
+
+async function loadApp(){
+  const pr=await db('/profiles?id=eq.'+U.user.id+'&select=*');
+  if(!pr.ok||!pr.data||!pr.data.length){showAuth();return;}
+  P=pr.data[0];
+  await loadFriend();
+  const gm=await db('/group_members?user_id=eq.'+P.id+'&select=group_id');
+  if(gm.data&&gm.data.length){
+    const gd=await db('/groups?id=eq.'+gm.data[0].group_id+'&select=*');
+    if(gd.data&&gd.data.length){
+      G=gd.data[0];
+      const mis=await db('/missions?group_id=eq.'+G.id+'&user_id=eq.'+P.id+'&select=*');
+      if(mis.data&&mis.data.length&&mis.data[0].approved_by){showApp();return;}
+      if(mis.data&&mis.data.length){await checkFM();return;}
+      showSetup(4);renderGoals();return;
+    }
+  }
+  const fs=await db('/friendships?or=(requester_id.eq.'+P.id+',receiver_id.eq.'+P.id+')&status=eq.accepted&select=*');
+  if(fs.data&&fs.data.length){showSetup(3);return;}
+  showSetup(1);
+  document.getElementById('s-code').textContent=P.friend_code||'——';
+}
+
+async function loadFriend(){
+  const fs=await db('/friendships?or=(requester_id.eq.'+P.id+',receiver_id.eq.'+P.id+')&status=eq.accepted&select=*');
+  if(!fs.data||!fs.data.length)return;
+  const fid=fs.data[0].requester_id===P.id?fs.data[0].receiver_id:fs.data[0].requester_id;
+  const fp=await db('/profiles?id=eq.'+fid+'&select=*');
+  if(fp.data&&fp.data.length)F=fp.data[0];
+}
+
+async function checkFM(){
+  if(!F){showSetup(6);return;}
+  const fm=await db('/missions?group_id=eq.'+G.id+'&user_id=eq.'+F.id+'&approved_by=is.null&select=*');
+  if(fm.data&&fm.data.length){showSetup(7);renderFR(fm.data);return;}
+  const my=await db('/missions?group_id=eq.'+G.id+'&user_id=eq.'+P.id+'&approved_by=not.is.null&select=*');
+  if(my.data&&my.data.length){showApp();return;}
+  showSetup(6);
+}
+
+function showAuth(){
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('setup-screen').classList.add('hidden');
+  document.getElementById('app').classList.add('hidden');
+}
+let waitPoll=null;
+function showSetup(n){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('setup-screen').classList.remove('hidden');
+  document.getElementById('app').classList.add('hidden');
+  document.querySelectorAll('.setup-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('setup-'+n).classList.add('active');
+  if(n===2){renderS2();startPoll(2,renderS2);}
+  else if(n===6){startPoll(6,checkStatus);}
+  else{stopPoll();}
+}
+function startPoll(step,fn){
+  if(waitPoll)clearInterval(waitPoll);
+  waitPoll=setInterval(async()=>{
+    if(!document.getElementById('setup-'+step).classList.contains('active')){clearInterval(waitPoll);waitPoll=null;return;}
+    await fn();
+  },4000);
+}
+function stopPoll(){if(waitPoll){clearInterval(waitPoll);waitPoll=null;}}
+function goS(n){showSetup(n);}
+
+async function renderS2(){
+  const pr=await db('/friendships?receiver_id=eq.'+P.id+'&status=eq.pending&select=*,requester:profiles!requester_id(username)');
+  document.getElementById('fr-pending').innerHTML=(pr.data||[]).map(f=>`
+    <div class="card-sm" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+      <div><div style="font-weight:600;font-family:var(--font-display)">${f.requester.username}</div><div style="font-size:12px;color:var(--text2)">quiere ser tu rival</div></div>
+      <button class="btn btn-sm btn-primary" onclick="acceptFR('${f.id}','${f.requester_id}')">Aceptar</button>
+    </div>`).join('');
+  const ac=await db('/friendships?or=(requester_id.eq.'+P.id+',receiver_id.eq.'+P.id+')&status=eq.accepted&select=*');
+  if(ac.data&&ac.data.length){
+    await loadFriend();
+    document.getElementById('fr-area').classList.add('hidden');
+    document.getElementById('fr-ok').classList.remove('hidden');
+    document.getElementById('fr-ok-name').textContent='¡Conectado con '+(F?.username||'tu rival')+'!';
+  }
+}
+
+async function sendFR(){
+  const code=document.getElementById('fr-code').value.trim().toLowerCase();
+  hideErr('fr-err');
+  if(!code){showErr('fr-err','Introduce un código');return;}
+  if(code===P.friend_code){showErr('fr-err','Ese es tu propio código');return;}
+  const r=await db('/profiles?friend_code=eq.'+code+'&select=id,username');
+  if(!r.data||!r.data.length){showErr('fr-err','Código no encontrado');return;}
+  const fr=r.data[0];
+  await db('/friendships','POST',{requester_id:P.id,receiver_id:fr.id,status:'pending'});
+  const e=document.getElementById('fr-err');
+  e.textContent='¡Solicitud enviada a '+fr.username+'!';
+  e.style.color='var(--green)';e.classList.add('show');
+}
+
+async function acceptFR(fid,rid){
+  await db('/friendships?id=eq.'+fid,'PATCH',{status:'accepted'});
+  await loadFriend();renderS2();
+}
+
+function showJoinToast(msg){
+  const t=document.getElementById('join-toast');
+  if(!t)return;
+  t.textContent=msg;
+  t.style.transform='translateY(0)';
+  setTimeout(()=>{t.style.transform='translateY(-120px)';},3500);
+}
+
+async function createGrp(){
+  const name=document.getElementById('g-name').value.trim();
+  hideErr('g-err');
+  if(!name){showErr('g-err','Ponle un nombre al grupo');return;}
+  if(!F){showErr('g-err','Primero vincula a tu rival');return;}
+  const btn=document.querySelector('#setup-3 .btn-primary');
+  if(btn){btn.disabled=true;btn.textContent='Creando...';}
+  try{
+    // Safety check: did the friend already create a group? Join it instead of creating a duplicate.
+    const fgm=await db('/group_members?user_id=eq.'+F.id+'&select=group_id');
+    if(fgm.data&&fgm.data.length){
+      G={id:fgm.data[0].group_id};
+      const already=await db('/group_members?group_id=eq.'+G.id+'&user_id=eq.'+P.id+'&select=user_id');
+      if(!already.data||!already.data.length){
+        await db('/group_members','POST',{group_id:G.id,user_id:P.id});
+        showJoinToast('Tu rival ya había creado el grupo — te has unido automáticamente');
+      }
+      const gd=await db('/groups?id=eq.'+G.id+'&select=*');
+      G=gd.data[0];
+      showSetup(4);renderGoals();
+      return;
+    }
+    const gr=await db('/groups','POST',{name,created_by:P.id});
+    if(!gr.ok){showErr('g-err','Error creando el grupo');return;}
+    const gd=await db('/groups?created_by=eq.'+P.id+'&order=created_at.desc&limit=1&select=*');
+    G=gd.data[0];
+    await db('/group_members','POST',{group_id:G.id,user_id:P.id});
+    await db('/group_members','POST',{group_id:G.id,user_id:F.id});
+    showSetup(4);renderGoals();
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Crear →';}
+  }
+}
+
+function renderGoals(){
+  document.getElementById('goals-list').innerHTML='';
+  for(let i=0;i<3;i++)addGoal();
+}
+function addGoal(){
+  const el=document.getElementById('goals-list');
+  const d=document.createElement('div');
+  d.className='goal-row';
+  d.innerHTML='<input type="text" placeholder="Ej: Ponerme en forma" maxlength="80"><button class="goal-rm" onclick="this.parentElement.remove()">×</button>';
+  el.appendChild(d);
+}
+
+async function saveGoals(){
+  const inputs=document.querySelectorAll('#goals-list input');
+  const goals=Array.from(inputs).map(i=>i.value.trim()).filter(Boolean);
+  if(!goals.length){alert('Añade al menos un objetivo');return;}
+  for(const text of goals)await db('/goals','POST',{user_id:P.id,group_id:G.id,text});
+  genMissions(goals);showSetup(5);
+}
+
+function genMissions(goals){
+  const g0=goals[0]||'tu objetivo';
+  const dm=[{t:'Dedicar 30 min a '+g0,x:80},{t:'Completar una tarea pendiente',x:60},{t:'Aprender algo nuevo (20 min)',x:50}];
+  const mm=[{t:'Alcanzar un hito clave en: '+g0,x:400},{t:'Completar un reto de 30 días',x:500},{t:'Mantener racha de 20 días',x:450}];
+  document.getElementById('dm-setup').innerHTML=dm.map((m,i)=>`
+    <div class="card-sm" style="margin-bottom:8px">
+      <input type="text" value="${m.t}" id="dm-${i}" style="margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--text2)">XP:</span><input type="number" value="${m.x}" id="dmx-${i}" style="width:80px"></div>
+    </div>`).join('');
+  document.getElementById('mm-setup').innerHTML=mm.map((m,i)=>`
+    <div class="card-sm" style="margin-bottom:8px">
+      <input type="text" value="${m.t}" id="mm-${i}" style="margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--text2)">XP:</span><input type="number" value="${m.x}" id="mmx-${i}" style="width:80px"></div>
+    </div>`).join('');
+}
+
+async function saveMissions(){
+  const today=new Date().toISOString().split('T')[0];
+  for(let i=0;i<3;i++){
+    const t=document.getElementById('dm-'+i)?.value.trim();
+    const x=parseInt(document.getElementById('dmx-'+i)?.value)||80;
+    if(t)await db('/missions','POST',{group_id:G.id,user_id:P.id,title:t,xp_value:x,type:'daily',period_start:today});
+  }
+  for(let i=0;i<3;i++){
+    const t=document.getElementById('mm-'+i)?.value.trim();
+    const x=parseInt(document.getElementById('mmx-'+i)?.value)||400;
+    if(t)await db('/missions','POST',{group_id:G.id,user_id:P.id,title:t,xp_value:x,type:'monthly',period_start:today});
+  }
+  await checkFM();
+}
+
+function renderFR(missions){
+  document.getElementById('fr-review').innerHTML=missions.map(m=>`
+    <div class="card-sm" style="margin-bottom:10px">
+      <div style="font-size:14px;font-weight:600;font-family:var(--font-display);margin-bottom:6px">${m.title}</div>
+      <span class="badge ${m.type==='daily'?'badge-purple':'badge-gold'}" style="margin-bottom:10px">${m.type==='daily'?'Diaria':'Mensual'}</span>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px"><span style="font-size:12px;color:var(--text2)">XP:</span><input type="number" value="${m.xp_value}" id="rxp-${m.id}" style="width:80px"></div>
+    </div>`).join('');
+}
+
+async function approveMis(){
+  const btn=document.getElementById('approve-btn');
+  if(btn){btn.disabled=true;btn.textContent='Aprobando...';}
+  try{
+    const fm=await db('/missions?group_id=eq.'+G.id+'&user_id=eq.'+F.id+'&select=*');
+    for(const m of fm.data||[]){
+      const xp=parseInt(document.getElementById('rxp-'+m.id)?.value)||m.xp_value;
+      await db('/missions?id=eq.'+m.id,'PATCH',{xp_value:xp,approved_by:P.id});
+    }
+    await db('/missions?group_id=eq.'+G.id+'&user_id=eq.'+P.id,'PATCH',{approved_by:F.id});
+    showApp();
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='✅ Aprobar y empezar';}
+  }
+}
+
+async function checkStatus(){await loadFriend();await checkFM();}
+
+function getCurrentPeriod(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+
+async function checkMonthlyClose(){
+  if(!G||!F)return false;
+  const gd=await db('/groups?id=eq.'+G.id+'&select=current_period,wheel_enabled');
+  if(!gd.data||!gd.data.length)return false;
+  const storedPeriod=gd.data[0].current_period||getCurrentPeriod();
+  const nowPeriod=getCurrentPeriod();
+  if(storedPeriod===nowPeriod)return false;
+  // Month changed — close out the previous period
+  const mxp=await db('/monthly_xp?group_id=eq.'+G.id+'&period=eq.'+storedPeriod+'&select=*');
+  const myEntry=(mxp.data||[]).find(x=>x.user_id===P.id);
+  const frEntry=(mxp.data||[]).find(x=>x.user_id===F.id);
+  const myXp=myEntry?myEntry.xp:0;
+  const frXp=frEntry?frEntry.xp:0;
+  if(myXp>0||frXp>0){
+    const winnerId=myXp>=frXp?P.id:F.id;
+    const winnerXp=Math.max(myXp,frXp);
+    const loserId=myXp>=frXp?F.id:P.id;
+    const loserXp=Math.min(myXp,frXp);
+    const already=await db('/monthly_results?group_id=eq.'+G.id+'&period=eq.'+storedPeriod+'&select=id');
+    if(!already.data||!already.data.length){
+      let punishment=null;
+      if(gd.data[0].wheel_enabled&&myXp!==frXp){
+        const wi=await db('/wheel_items?group_id=eq.'+G.id+'&select=text');
+        if(wi.data&&wi.data.length){
+          punishment=wi.data[Math.floor(Math.random()*wi.data.length)].text;
+        }
+      }
+      await db('/monthly_results','POST',{group_id:G.id,period:storedPeriod,winner_id:winnerId,winner_xp:winnerXp,loser_id:loserId,loser_xp:loserXp,wheel_punishment:punishment});
+      if(winnerId===P.id)await unlockAch('monthly_winner');
+      if(myXp>=frXp*2&&frXp>0)await unlockAch('double_win');
+    }
+  }
+  // Reset monthly missions: clear approval so new ones get created, archive old completions stay as history
+  await db('/missions?group_id=eq.'+G.id+'&type=eq.monthly','DELETE');
+  // Update period marker
+  await db('/groups?id=eq.'+G.id,'PATCH',{current_period:nowPeriod});
+  return true;
+}
+
+async function regenerateMonthlyMissions(){
+  const goals=await db('/goals?user_id=eq.'+P.id+'&select=text');
+  const goalTexts=(goals.data||[]).map(g=>g.text);
+  const g0=goalTexts[0]||'tu objetivo';
+  const mm=[{t:'Alcanzar un hito clave en: '+g0,x:400},{t:'Completar un reto de 30 días',x:500},{t:'Mantener racha de 20 días',x:450}];
+  const today=new Date().toISOString().split('T')[0];
+  for(const m of mm){
+    await db('/missions','POST',{group_id:G.id,user_id:P.id,title:m.t,xp_value:m.x,type:'monthly',period_start:today,approved_by:F?F.id:P.id});
+  }
+}
+
+async function showMonthlyResult(){
+  const r=await db('/monthly_results?group_id=eq.'+G.id+'&order=created_at.desc&limit=1&select=*');
+  if(!r.data||!r.data.length)return;
+  const res=r.data[0];
+  const won=res.winner_id===P.id;
+  const overlay=document.getElementById('monthres-overlay');
+  if(!overlay)return;
+  document.getElementById('monthres-title').textContent=won?'¡Ganaste el mes!':'Este mes tocó a tu rival';
+  document.getElementById('monthres-emoji').textContent=won?'🏆':'😅';
+  document.getElementById('monthres-detail').textContent=res.winner_xp.toLocaleString()+' XP vs '+res.loser_xp.toLocaleString()+' XP';
+  const pun=document.getElementById('monthres-punishment');
+  if(res.wheel_punishment&&!won){
+    pun.classList.remove('hidden');
+    pun.innerHTML='<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Tu castigo</div><div style="font-size:16px;font-weight:600;font-family:var(--font-display);color:var(--gold)">'+res.wheel_punishment+'</div>';
+  }else if(res.wheel_punishment&&won){
+    pun.classList.remove('hidden');
+    pun.innerHTML='<div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Castigo de tu rival</div><div style="font-size:16px;font-weight:600;font-family:var(--font-display);color:var(--gold)">'+res.wheel_punishment+'</div>';
+  }else{
+    pun.classList.add('hidden');
+  }
+  overlay.classList.add('show');
+}
+
+function closeMonthRes(){document.getElementById('monthres-overlay').classList.remove('show');}
+
+async function showApp(){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('setup-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  await loadUA();
+  const closed=await checkMonthlyClose();
+  if(closed)await regenerateMonthlyMissions();
+  await refreshDash();
+  if(closed)await showMonthlyResult();
+  setInterval(async()=>{
+    if(!document.getElementById('page-dashboard').classList.contains('hidden')&&F){
+      const fp=await db('/profiles?id=eq.'+F.id+'&select=*');
+      if(fp.data&&fp.data.length){F=fp.data[0];refreshDash();}
+    }
+  },30000);
+}
+
+async function loadUA(){
+  const r=await db('/user_achievements?user_id=eq.'+P.id+'&select=achievement_id');
+  UA=(r.data||[]).map(a=>a.achievement_id);
+}
+
+function getLv(xp){for(let i=LVL.length-1;i>=0;i--)if(xp>=LVL[i])return i+1;return 1;}
+function getProg(xp){
+  const lv=getLv(xp);
+  const curr=LVL[lv-1]||0;
+  const next=LVL[lv]||curr+2000;
+  return{pct:Math.min(100,((xp-curr)/(next-curr))*100),needed:next-xp,lv};
+}
+
+function showPage(pg){
+  ['dashboard','missions','group','trophies','profile'].forEach(p=>{
+    document.getElementById('page-'+p).classList.toggle('hidden',p!==pg);
+    document.getElementById('nav-'+p).classList.toggle('active',p===pg);
+  });
+  if(pg==='dashboard')refreshDash();
+  if(pg==='missions')refreshMis();
+  if(pg==='group')refreshGrp();
+  if(pg==='trophies')refreshTr();
+  if(pg==='profile')refreshProf();
+}
+
+async function refreshDash(){
+  const pr=await db('/profiles?id=eq.'+P.id+'&select=*');
+  if(pr.data&&pr.data.length)P=pr.data[0];
+  const h=new Date().getHours();
+  const g=h<12?'¡Buenos días':h<18?'¡Buenas tardes':'¡Buenas noches';
+  document.getElementById('d-greeting').textContent=g+', '+P.username+'!';
+  document.getElementById('d-date').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+  const{pct,needed,lv}=getProg(P.xp);
+  document.getElementById('d-level').textContent=lv;
+  document.getElementById('d-level-name').textContent=LVL_N[lv-1]||'';
+  document.getElementById('d-xp').textContent=P.xp.toLocaleString();
+  document.getElementById('d-xp-bar').style.width=pct+'%';
+  document.getElementById('d-xp-next').textContent=needed.toLocaleString()+' XP para nivel '+(lv+1);
+  document.getElementById('d-streak').textContent='🔥 '+P.streak;
+  if(F){
+    const fp=await db('/profiles?id=eq.'+F.id+'&select=*');
+    if(fp.data&&fp.data.length)F=fp.data[0];
+    const fLv=getLv(F.xp);
+    const riv=document.getElementById('d-rival');riv.style.display='block';
+    document.getElementById('d-rival-av').textContent=F.username[0].toUpperCase();
+    document.getElementById('d-rival-name').textContent=F.username;
+    document.getElementById('d-rival-level').textContent='Nivel '+fLv+' · '+LVL_N[fLv-1];
+    document.getElementById('d-rival-xp').textContent=F.xp.toLocaleString()+' XP';
+    const today=new Date().toISOString().split('T')[0];
+    const fc=await db('/mission_completions?user_id=eq.'+F.id+'&completed_date=eq.'+today+'&select=*');
+    document.getElementById('d-rival-mis').textContent=(fc.data?.length||0)+' misiones hoy';
+    const tot=P.xp+F.xp||1;
+    document.getElementById('d-rival-bar').style.width=Math.round(F.xp/tot*100)+'%';
+  }
+  if(G){
+    const today=new Date().toISOString().split('T')[0];
+    const mis=await db('/missions?group_id=eq.'+G.id+'&user_id=eq.'+P.id+'&approved_by=not.is.null&select=*');
+    const comps=await db('/mission_completions?user_id=eq.'+P.id+'&completed_date=eq.'+today+'&select=mission_id');
+    const allC=await db('/mission_completions?user_id=eq.'+P.id+'&select=mission_id');
+    const doneT=new Set((comps.data||[]).map(c=>c.mission_id));
+    const doneA=new Set((allC.data||[]).map(c=>c.mission_id));
+    const daily=(mis.data||[]).filter(m=>m.type==='daily');
+    const monthly=(mis.data||[]).filter(m=>m.type==='monthly');
+    // Day progress
+    const doneTodayCount=daily.filter(m=>doneT.has(m.id)).length;
+    const xpToday=daily.filter(m=>doneT.has(m.id)).reduce((a,m)=>a+m.xp_value,0);
+    const xpAvail=daily.reduce((a,m)=>a+m.xp_value,0);
+    const dp=document.getElementById('d-day-progress');
+    if(daily.length){
+      dp.style.display='block';
+      document.getElementById('d-day-count').textContent=doneTodayCount+'/'+daily.length+' misiones';
+      document.getElementById('d-day-xp').textContent=xpToday+' XP';
+      document.getElementById('d-day-bar').style.width=(xpAvail?Math.round(xpToday/xpAvail*100):0)+'%';
+    }
+    document.getElementById('d-daily').innerHTML=renderMis(daily,doneT,'var(--purple3)');
+    document.getElementById('d-monthly').innerHTML=renderMis(monthly,doneA,'var(--gold)');
+  }
+}
+
+function renderMis(missions,doneSet,color){
+  if(!missions.length)return'<div style="padding:16px;text-align:center;color:var(--text3);font-size:13px">Sin misiones</div>';
+  return missions.map(m=>{
+    const done=doneSet.has(m.id);
+    return`<div class="mission-wrap ${done?'done-wrap':''}">
+      <div class="mission-row">
+        <div class="mission-check ${done?'done':''}" onclick="toggleM('${m.id}',${done})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="mission-title ${done?'done-text':''}">${m.title}</div>
+          <div class="mission-xp" style="color:${color}">⚡ ${m.xp_value} XP</div>
+        </div>
+        <button onclick="openEdit('${m.id}','${m.title.replace(/'/g,"\\'")}',${m.xp_value})" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:4px 6px;border-radius:6px">✏️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function addMonthlyXp(delta){
+  if(!G)return;
+  const period=getCurrentPeriod();
+  const ex=await db('/monthly_xp?group_id=eq.'+G.id+'&user_id=eq.'+P.id+'&period=eq.'+period+'&select=*');
+  if(ex.data&&ex.data.length){
+    const newVal=Math.max(0,ex.data[0].xp+delta);
+    await db('/monthly_xp?id=eq.'+ex.data[0].id,'PATCH',{xp:newVal});
+  }else if(delta>0){
+    await db('/monthly_xp','POST',{group_id:G.id,user_id:P.id,period,xp:delta});
+  }
+}
+
+async function toggleM(id,isDone){
+  const today=new Date().toISOString().split('T')[0];
+  const now=new Date();
+  const m=await db('/missions?id=eq.'+id+'&select=xp_value,type');
+  if(!m.data||!m.data.length)return;
+  const mis=m.data[0];
+  if(isDone){
+    await db('/mission_completions?mission_id=eq.'+id+'&user_id=eq.'+P.id+'&completed_date=eq.'+today,'DELETE');
+    const newXp=Math.max(0,P.xp-mis.xp_value);
+    await db('/profiles?id=eq.'+P.id,'PATCH',{xp:newXp});
+    P.xp=newXp;
+    await addMonthlyXp(-mis.xp_value);
+  }else{
+    const r=await db('/mission_completions','POST',{mission_id:id,user_id:P.id,completed_date:today});
+    if(!r.ok)return;
+    const oldXp=P.xp,newXp=oldXp+mis.xp_value;
+    const oldLv=getLv(oldXp),newLv=getLv(newXp);
+    const lastActive=P.last_active;
+    const yest=new Date();yest.setDate(yest.getDate()-1);
+    const yStr=yest.toISOString().split('T')[0];
+    let newStreak=P.streak;
+    if(lastActive!==today){
+      if(lastActive===yStr)newStreak=P.streak+1;
+      else if(!lastActive)newStreak=1;
+      else newStreak=1;
+    }
+    await db('/profiles?id=eq.'+P.id,'PATCH',{xp:newXp,streak:newStreak,last_active:today});
+    P.xp=newXp;P.streak=newStreak;
+    await addMonthlyXp(mis.xp_value);
+    if(now.getHours()<6)await unlockAch('night_owl');
+    await unlockAch('first_mission');
+    if(newStreak>=7)await unlockAch('week_streak');
+    if(newLv>oldLv)showLU(newLv);
+    if(mis.type==='monthly'){
+      const mc=await db('/mission_completions?user_id=eq.'+P.id+'&select=mission_id');
+      const mm=await db('/missions?group_id=eq.'+G.id+'&user_id=eq.'+P.id+'&type=eq.monthly&select=id');
+      const done=new Set((mc.data||[]).map(c=>c.mission_id));
+      if((mm.data||[]).filter(x=>done.has(x.id)).length>=3)await unlockAch('momentum');
+    }
+  }
+  await refreshDash();
+  if(!document.getElementById('page-missions').classList.contains('hidden'))refreshMis();
+}
+
+async function unlockAch(id){
+  if(UA.includes(id))return;
+  const r=await db('/user_achievements','POST',{user_id:P.id,achievement_id:id});
+  if(r.ok){
+    UA.push(id);
+    const def=ACHS.find(a=>a.id===id);
+    if(def){
+      document.getElementById('ach-icon').textContent=def.icon;
+      document.getElementById('ach-title').textContent=def.name;
+      document.getElementById('ach-desc').textContent=def.desc;
+      const t=document.getElementById('ach-toast');t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'),4000);
+    }
+  }
+}
+
+function showLU(lv){
+  document.getElementById('lu-num').textContent=lv;
+  document.getElementById('lu-title').textContent=(LVL_N[lv-1]||'INCREÍBLE').toUpperCase();
+  document.getElementById('lu-sub').textContent='Has alcanzado el nivel '+lv;
+  const c=document.getElementById('particles');c.innerHTML='';
+  const cols=['#7C3AED','#9B5CF6','#B07FFF','#F0A500','#FFB830','#fff'];
+  for(let i=0;i<35;i++){
+    const p=document.createElement('div');
+    const sz=4+Math.random()*6;
+    p.className='particle';
+    p.style.cssText=`left:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:${cols[Math.floor(Math.random()*cols.length)]};animation-delay:${Math.random()*2}s;animation-duration:${2+Math.random()}s`;
+    c.appendChild(p);
+  }
+  const ov=document.getElementById('lu-overlay');ov.style.display='flex';ov.style.opacity='0';
+  setTimeout(()=>ov.style.opacity='1',10);
+}
+function closeLU(){
+  const ov=document.getElementById('lu-overlay');
+  ov.style.opacity='0';
+  setTimeout(()=>ov.style.display='none',400);
+}
+
+async function refreshMis(){
+  if(!G)return;
+  const today=new Date().toISOString().split('T')[0];
+  const mis=await db('/missions?group_id=eq.'+G.id+'&user_id=eq.'+P.id+'&approved_by=not.is.null&select=*');
+  const comps=await db('/mission_completions?user_id=eq.'+P.id+'&select=mission_id,completed_date');
+  const doneT=new Set((comps.data||[]).filter(c=>c.completed_date===today).map(c=>c.mission_id));
+  const doneA=new Set((comps.data||[]).map(c=>c.mission_id));
+  const daily=(mis.data||[]).filter(m=>m.type==='daily');
+  const monthly=(mis.data||[]).filter(m=>m.type==='monthly');
+  const doneTodayCount=daily.filter(m=>doneT.has(m.id)).length;
+  const xpToday=daily.filter(m=>doneT.has(m.id)).reduce((a,m)=>a+m.xp_value,0);
+  const xpAvail=daily.reduce((a,m)=>a+m.xp_value,0);
+  document.getElementById('m-count').textContent=doneTodayCount+'/'+daily.length;
+  document.getElementById('m-xp').textContent=xpToday+' XP ganados';
+  document.getElementById('m-bar').style.width=(xpAvail?Math.round(xpToday/xpAvail*100):0)+'%';
+  document.getElementById('m-daily').innerHTML=renderMis(daily,doneT,'var(--purple3)');
+  document.getElementById('m-monthly').innerHTML=renderMis(monthly,doneA,'var(--gold)');
+}
+
+function misTab(t){
+  document.querySelectorAll('.tabs .tab').forEach((x,i)=>x.classList.toggle('active',i===(t==='daily'?0:1)));
+  document.getElementById('m-daily').classList.toggle('hidden',t!=='daily');
+  document.getElementById('m-monthly').classList.toggle('hidden',t!=='monthly');
+}
+
+function openEdit(id,title,xp){editId=id;document.getElementById('e-title').value=title;document.getElementById('e-xp').value=xp;document.getElementById('edit-overlay').classList.add('show');}
+function closeEdit(e){if(!e||e.target===document.getElementById('edit-overlay'))document.getElementById('edit-overlay').classList.remove('show');}
+async function saveEdit(){
+  const t=document.getElementById('e-title').value.trim();
+  const x=parseInt(document.getElementById('e-xp').value)||100;
+  if(!t)return;
+  await db('/missions?id=eq.'+editId,'PATCH',{title:t,xp_value:x});
+  closeEdit();await refreshMis();await refreshDash();
+}
+
+async function refreshGrp(){
+  if(!G)return;
+  document.getElementById('g-title').textContent=G.name;
+  // Countdown
+  const now=new Date();
+  const lastDay=new Date(now.getFullYear(),now.getMonth()+1,0);
+  const diff=Math.ceil((lastDay-now)/(1000*60*60*24));
+  document.getElementById('g-countdown').textContent=diff+' día'+(diff===1?'':'s');
+  // Monthly XP banner (resets each month, not total XP)
+  const period=getCurrentPeriod();
+  const mxp=await db('/monthly_xp?group_id=eq.'+G.id+'&period=eq.'+period+'&select=*');
+  const myM=((mxp.data||[]).find(x=>x.user_id===P.id)||{xp:0}).xp;
+  const frM=F?((mxp.data||[]).find(x=>x.user_id===F.id)||{xp:0}).xp:0;
+  if(F){
+    const w=myM>frM?P.username:(frM>myM?F.username:null);
+    document.getElementById('g-banner').innerHTML=w?`
+      <div class="monthly-banner">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Líder este mes</div>
+        <div style="font-size:22px;font-weight:700;font-family:var(--font-display);color:var(--gold)">👑 ${w}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">${Math.max(myM,frM).toLocaleString()} XP vs ${Math.min(myM,frM).toLocaleString()} XP</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px">Se reinicia en ${diff} día${diff===1?'':'s'}</div>
+      </div>`:`
+      <div class="monthly-banner">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:6px">Este mes</div>
+        <div style="font-size:14px;color:var(--text2)">Empate — ¡a por ello!</div>
+      </div>`;
+  }
+  // Results history
+  const hist=await db('/monthly_results?group_id=eq.'+G.id+'&order=period.desc&limit=6&select=*');
+  const histEl=document.getElementById('g-history');
+  if(histEl){
+    if(hist.data&&hist.data.length){
+      histEl.innerHTML=hist.data.map(h=>{
+        const won=h.winner_id===P.id;
+        const wname=won?'Tú':(F?.username||'Rival');
+        const[y,mo]=h.period.split('-');
+        const monthName=new Date(y,mo-1,1).toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+        return`<div class="card-sm" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:13px;font-weight:600;text-transform:capitalize">${monthName}</div>
+            <div style="font-size:11px;color:var(--text3)">${h.winner_xp.toLocaleString()} vs ${h.loser_xp.toLocaleString()} XP</div>
+          </div>
+          <span class="badge ${won?'badge-gold':'badge-purple'}">${won?'🏆 Ganaste':wname+' ganó'}</span>
+        </div>`;
+      }).join('');
+    }else{
+      histEl.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px 0">Aún no hay meses completados</div>';
+    }
+  }
+  // Members
+  document.getElementById('g-members').innerHTML=[P,F].filter(Boolean).map(m=>{
+    const{pct,lv}=getProg(m.xp);
+    const isMe=m.id===P.id;
+    return`<div class="player-card">
+      <div class="player-header">
+        <div class="avatar avatar-md ${isMe?'avatar-purple':'avatar-gold'}">${m.username[0].toUpperCase()}</div>
+        <div class="player-info">
+          <div class="player-name">${m.username}${isMe?' <span style="font-size:11px;color:var(--text3);font-family:var(--font-body)">(Tú)</span>':''}</div>
+          <div class="player-level">Nivel ${lv} · ${LVL_N[lv-1]}</div>
+        </div>
+        <div class="player-xp">${m.xp.toLocaleString()}</div>
+      </div>
+      <div class="xp-bar-wrap"><div class="xp-bar-fill ${isMe?'':'xp-bar-gold'}" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+  // Wheel
+  const gd=await db('/groups?id=eq.'+G.id+'&select=wheel_enabled');
+  if(gd.data&&gd.data.length){
+    document.getElementById('wh-toggle').checked=gd.data[0].wheel_enabled;
+    if(gd.data[0].wheel_enabled)document.getElementById('wh-section').classList.remove('hidden');
+  }
+  const wi=await db('/wheel_items?group_id=eq.'+G.id+'&select=*');
+  document.getElementById('wh-items').innerHTML=(wi.data||[]).map(i=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;background:var(--s2);border-radius:8px;padding:10px 12px">
+      <span style="flex:1;font-size:13px">🎯 ${i.text}</span>
+      <button onclick="removeWI('${i.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;line-height:1">×</button>
+    </div>`).join('')||'<div style="font-size:12px;color:var(--text3);padding:8px 0">Sin castigos aún</div>';
+}
+
+async function toggleWheel(){await db('/groups?id=eq.'+G.id,'PATCH',{wheel_enabled:document.getElementById('wh-toggle').checked});document.getElementById('wh-section').classList.toggle('hidden',!document.getElementById('wh-toggle').checked);}
+async function addWI(){const t=document.getElementById('wh-input').value.trim();if(!t)return;await db('/wheel_items','POST',{group_id:G.id,text:t,added_by:P.id});document.getElementById('wh-input').value='';refreshGrp();}
+async function removeWI(id){await db('/wheel_items?id=eq.'+id,'DELETE');refreshGrp();}
+
+async function spinWheel(){
+  const wi=await db('/wheel_items?group_id=eq.'+G.id+'&select=*');
+  wItems=wi.data||[];
+  if(!wItems.length){alert('Añade castigos primero');return;}
+  document.getElementById('wh-overlay').classList.add('show');
+  document.getElementById('wh-result').classList.add('hidden');
+  drawWheel();
+}
+function closeWO(e){if(!e||e.target===document.getElementById('wh-overlay'))document.getElementById('wh-overlay').classList.remove('show');}
+
+function drawWheel(){
+  const cv=document.getElementById('wh-canvas'),ctx=cv.getContext('2d'),cx=140,cy=140,r=130;
+  const cols=['#4C1D95','#5B21B6','#6D28D9','#7C3AED','#8B5CF6','#A78BFA'];
+  ctx.clearRect(0,0,280,280);
+  const sl=(Math.PI*2)/wItems.length;
+  wItems.forEach((item,i)=>{
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,wAngle+i*sl,wAngle+(i+1)*sl);
+    ctx.fillStyle=cols[i%cols.length];ctx.fill();
+    ctx.strokeStyle='#08080F';ctx.lineWidth=2;ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(wAngle+i*sl+sl/2);
+    ctx.textAlign='right';ctx.fillStyle='rgba(255,255,255,0.9)';ctx.font='bold 11px "Space Grotesk",sans-serif';
+    const txt=item.text.length>14?item.text.slice(0,14)+'…':item.text;
+    ctx.fillText(txt,r-10,4);ctx.restore();
+  });
+  ctx.beginPath();ctx.arc(cx,cy,22,0,Math.PI*2);ctx.fillStyle='#08080F';ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,16,0,Math.PI*2);ctx.fillStyle='#7C3AED';ctx.fill();
+  ctx.beginPath();ctx.moveTo(cx+r+12,cy);ctx.lineTo(cx+r-8,cy-9);ctx.lineTo(cx+r-8,cy+9);ctx.fillStyle='#F0A500';ctx.fill();
+}
+
+function doSpin(){
+  const btn=document.getElementById('spin-btn');btn.disabled=true;
+  const total=2200+Math.random()*2000,dur=4500,start=Date.now();
+  function anim(){
+    const el=Date.now()-start,prog=Math.min(1,el/dur),eased=1-Math.pow(1-prog,4);
+    wAngle=(total*eased*(Math.PI/180))%(Math.PI*2);drawWheel();
+    if(prog<1){requestAnimationFrame(anim);}else{
+      const sl=(Math.PI*2)/wItems.length;
+      const norm=((Math.PI*2)-(wAngle%(Math.PI*2)))%(Math.PI*2);
+      const idx=Math.floor(norm/sl)%wItems.length;
+      const res=document.getElementById('wh-result');res.classList.remove('hidden');
+      document.getElementById('wh-result-text').textContent=wItems[idx].text;
+      btn.disabled=false;
+    }
+  }
+  requestAnimationFrame(anim);
+}
+
+async function refreshTr(){
+  await loadUA();
+  const count=UA.length;
+  document.getElementById('tr-count').textContent=count+'/'+ACHS.length;
+  document.getElementById('tr-grid').innerHTML=ACHS.map(a=>{
+    const un=UA.includes(a.id);
+    return`<div class="trophy-card ${un?'unlocked':'trophy-locked'}">
+      <span class="trophy-icon">${a.icon}</span>
+      <div class="trophy-name">${a.name}</div>
+      <div class="trophy-desc">${a.desc}</div>
+      ${un?'<div class="badge badge-gold" style="margin-top:8px">Obtenido ✓</div>':''}
+    </div>`;
+  }).join('');
+}
+
+async function refreshProf(){
+  const pr=await db('/profiles?id=eq.'+P.id+'&select=*');
+  if(pr.data&&pr.data.length)P=pr.data[0];
+  const{lv}=getProg(P.xp);
+  document.getElementById('p-av').textContent=P.username[0].toUpperCase();
+  document.getElementById('p-name').textContent=P.username;
+  document.getElementById('p-level').textContent='Nivel '+lv+' · '+LVL_N[lv-1];
+  document.getElementById('p-code').textContent=P.friend_code;
+  document.getElementById('p-xp').textContent=P.xp.toLocaleString()+' XP';
+  document.getElementById('p-lv').textContent=lv;
+  document.getElementById('p-streak').textContent='🔥 '+P.streak+' días';
+  const mc=await db('/mission_completions?user_id=eq.'+P.id+'&select=id');
+  document.getElementById('p-mis').textContent=mc.data?.length||0;
+  await loadUA();
+  document.getElementById('p-achs').textContent=UA.length+' / '+ACHS.length;
+}
+
+function copyCode(){
+  const code=P?.friend_code||'';
+  if(navigator.clipboard)navigator.clipboard.writeText(code);
+  alert('Código copiado: '+code);
+}
+
+function doLogout(){localStorage.removeItem('nx_s');U=null;P=null;G=null;F=null;UA=[];showAuth();}
+
+async function refreshToken(){
+  try{
+    const s=localStorage.getItem('nx_s');if(!s)return false;
+    const session=JSON.parse(s);if(!session.refresh_token)return false;
+    const r=await fetch(SB+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{'Content-Type':'application/json','apikey':KEY},body:JSON.stringify({refresh_token:session.refresh_token})});
+    const data=await r.json();
+    if(data.access_token){U=data;localStorage.setItem('nx_s',JSON.stringify(data));return true;}
+    return false;
+  }catch(e){return false;}
+}
+setInterval(async()=>{if(U)await refreshToken();},50*60*1000);
+
+// Level up overlay setup
+const luOv=document.getElementById('lu-overlay');
+luOv.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.4s';
+
+window.addEventListener('load',async function(){
+  const s=localStorage.getItem('nx_s');
+  if(s){
+    try{
+      U=JSON.parse(s);
+      if(U?.user?.id){
+        await refreshToken();
+        const pr=await db('/profiles?id=eq.'+U.user.id+'&select=id');
+        if(pr.ok&&pr.data&&pr.data.length){await loadApp();return;}
+      }
+    }catch(e){}
+    localStorage.removeItem('nx_s');
+  }
+  showAuth();
+});
+</script>
+</body>
+</html>
